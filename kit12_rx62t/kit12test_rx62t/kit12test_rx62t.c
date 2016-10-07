@@ -13,7 +13,7 @@ This program supports the following boards:
 * Sensor board Ver. 5
 * Motor drive board Ver. 5
 */
-
+/*ÞAMPÝYON TRABZON*/
 /*
 operation check Micon car kit sensor board Ver.5 and Motor drive board 
 Ver.5
