@@ -1,0 +1,8 @@
+-cpu=rx600
+-endian=big
+-lang=c
+-output=obj="C:\WorkSpace\kit12_rx62t\kit12test_rx62t\Debug\dbsct.obj"
+-debug
+-section=L=C
+"C:\WorkSpace\kit12_rx62t\kit12test_rx62t\dbsct.c"
+-nologo
