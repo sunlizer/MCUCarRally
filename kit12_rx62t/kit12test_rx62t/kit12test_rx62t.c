@@ -1,5 +1,6 @@
 /***********************************************************************/
-/*  Supported Microcontroller:RX62T                                    */
+/*  Supported Microcontroller:RX62T        							*/
+/*this is sparta							                           */
 /*  File:                   kit12test_rx62t.c                          */
 /*  File Contents:          Operation Test Program(RX62T version)      */
 /*  Version number:         Ver.1.00                                   */
