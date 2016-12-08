@@ -706,12 +706,6 @@ void led_out( unsigned char led )
 /***********************************************************************/
 void motor( int accele_l, int accele_r )
 {
-    int    sw_data;
-
-    sw_data = dipsw_get() + 5;
-    accele_l = accele_l * sw_data / 20;
-    accele_r = accele_r * sw_data / 20;
-
     /* Left Motor Control */
     if( accele_l >= 0 ) {
         PORT7.DR.BYTE &= 0xef;
