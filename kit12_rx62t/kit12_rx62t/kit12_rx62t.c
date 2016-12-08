@@ -243,7 +243,6 @@ void main(void)
         case 21:
             /* Processing at 1st cross line */
             led_out( 0x3 );
-            motor( 0 ,0 );
             pattern = 22;
             cnt1 = 0;
             break;
@@ -258,18 +257,18 @@ void main(void)
 
         case 23:
             /* Trace, crank detection after cross line */
-            if( sensor_inp(MASK4_4)==0xf8 ) {
+            if( sensor_inp(MASK4_4)==0xf8 || sensor_inp(MASK4_4)==0xf0 ) {
                 /* Left crank determined -> to left crank clearing processing */
                 led_out( 0x1 );
-                motor( 14 ,100 );
+                motor( -50 ,100 );
                 pattern = 31;
                 cnt1 = 0;
                 break;
             }
-            if( sensor_inp(MASK4_4)==0x1f ) {
+            if( sensor_inp(MASK4_4)==0x1f || sensor_inp(MASK4_4)==0x0f) {
                 /* Right crank determined -> to right crank clearing processing */
                 led_out( 0x2 );
-                motor( 100 ,17 );
+                motor( 100 ,-50 );
                 pattern = 41;
                 cnt1 = 0;
                 break;
@@ -305,6 +304,7 @@ void main(void)
             break;
 
         case 32:
+			led_out( 0x0 );
             /* Left crank clearing processing ? check end of turn */
             if( sensor_inp(MASK3_3) == 0x60 ) {
                 led_out( 0x0 );

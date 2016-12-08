@@ -3,7 +3,7 @@
 [DATABASE_VERSION]
 "1.2" 
 [CURRENT_PROJECT]
-"sioservo1_62t" 
+"kit12_rx62t" 
 [GENERAL_DATA]
 "BuildMultipleSettings" "sioservo1_62t|Debug|kit12_rx62t|Debug|sioservo2_62t|Debug|kit12test_rx62t|Debug||" 
 [BREAKPOINTS]
