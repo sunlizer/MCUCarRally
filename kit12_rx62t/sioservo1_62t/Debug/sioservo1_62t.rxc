@@ -1,0 +1,9 @@
+-cpu=rx600
+-endian=big
+-lang=c
+-output=obj="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sioservo1_62t.obj"
+-debug
+-section=L=C
+-volatile
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\sioservo1_62t.c"
+-nologo

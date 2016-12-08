@@ -1,0 +1,9 @@
+-cpu=rx600
+-endian=big
+-lang=c
+-output=obj="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\dbsct.obj"
+-debug
+-section=L=C
+-volatile
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\dbsct.c"
+-nologo

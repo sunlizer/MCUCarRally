@@ -1,0 +1,5 @@
+-cpu=rx600
+-endian=big
+-output="C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\Debug\kit12_rx62t.lib"
+-section=L=C
+-head=runtime,math,stdio,stdlib,string,new

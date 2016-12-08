@@ -1,0 +1,8 @@
+-cpu=rx600
+-endian=big
+-lang=c
+-output=obj="C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\Debug\sbrk.obj"
+-debug
+-section=L=C
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\sbrk.c"
+-nologo

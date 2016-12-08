@@ -1,0 +1,77 @@
+Optimizing Linkage Editor (V.10.02.00.000)        06-Dec-2016 18:04:06
+
+*** Options ***
+
+-subcommand=C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sioservo1_62t.hlk
+-noprelink
+-rom=D=R,D_1=R_1,D_2=R_2
+-nomessage
+-list="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sioservo1_62t.map"
+-nooptimize
+-start=B_1,R_1,B_2,R_2,B,R,SI/01000,PResetPRG/0FFFF8000,L,C_1,C_2,C,C$*,D*,P,PIntPRG,W*/0FFFF8100,FIXEDVECT/0FFFFFFD0
+-nologo
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\dbsct.obj"
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\intprg.obj"
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\printf_lib.obj"
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\resetprg.obj"
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sbrk.obj"
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sioservo1_62t.obj"
+-input="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\vecttbl.obj"
+-library="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sioservo1_62t.lib"
+-output="C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\Debug\sioservo1_62t.abs"
+-end
+
+*** Error information ***
+
+*** Mapping List ***
+
+SECTION                            START      END         SIZE   ALIGN
+
+B_1
+                                  00001000  00001061        62   1
+R_1
+                                  00001062  000010b2        51   1
+B_2
+                                  000010b4  000010b4         0   2
+R_2
+                                  000010b4  000010b4         0   2
+B
+                                  000010b4  0000150f       45c   4
+R
+                                  00001510  0000176b       25c   4
+SI
+                                  0000176c  00001a6b       300   4
+PResetPRG
+                                  ffff8000  ffff802b        2c   4
+L
+                                  ffff8100  ffff8144        45   4
+C_1
+                                  ffff8145  ffff8216        d2   1
+C_2
+                                  ffff8218  ffff8419       202   2
+C
+                                  ffff841c  ffff8513        f8   4
+C$DSEC
+                                  ffff8514  ffff8537        24   4
+C$BSEC
+                                  ffff8538  ffff854f        18   4
+C$VECT
+                                  ffff8550  ffff894f       400   4
+D
+                                  ffff8950  ffff8bab       25c   4
+D_2
+                                  ffff8bac  ffff8bac         0   2
+D_1
+                                  ffff8bac  ffff8bfc        51   1
+P
+                                  ffff8c00  ffffac5e      205f   4
+PIntPRG
+                                  ffffac5f  ffffad43        e5   1
+W_1
+                                  ffffad44  ffffad44         0   4
+W_2
+                                  ffffad44  ffffad44         0   2
+W
+                                  ffffad44  ffffad44         0   4
+FIXEDVECT
+                                  ffffffd0  ffffffff        30   4

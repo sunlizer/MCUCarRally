@@ -72,7 +72,6 @@ void main(void)
     init();
 
     /* Initialize micom car state */
-    handle( 0 );
     motor( 0, 0 );
 
     while( 1 ) {
@@ -153,57 +152,48 @@ void main(void)
             switch( sensor_inp(MASK3_3) ) {
                 case 0x00:
                     /* Center -> straight */
-                    handle( 0 );
                     motor( 100 ,100 );
                     break;
 
                 case 0x04:
                     /* Slight amount left of center -> slight turn to right */
-                    handle( 5 );
-                    motor( 100 ,100 );
+                    motor( 100 ,40 );
                     break;
 
                 case 0x06:
                     /* Small amount left of center -> small turn to right */
-                    handle( 10 );
-                    motor( 80 ,67 );
+                    motor( 100 ,30 );
                     break;
 
                 case 0x07:
                     /* Medium amount left of center -> medium turn to right */
-                    handle( 15 );
-                    motor( 50 ,38 );
+                    motor( 100 ,25 );
                     break;
 
                 case 0x03:
                     /* Large amount left of center -> large turn to right */
-                    handle( 25 );
-                    motor( 30 ,19 );
+                    motor( 70 ,20 );
                     pattern = 12;
                     break;
 
                 case 0x20:
                     /* Slight amount right of center -> slight turn to left */
-                    handle( -5 );
-                    motor( 100 ,100 );
+                    motor( 40 ,100 );
                     break;
 
                 case 0x60:
                     /* Small amount right of center -> small turn to left */
-                    handle( -10 );
-                    motor( 67 ,80 );
+                    motor( 30 ,100 );
                     break;
 
                 case 0xe0:
                     /* Medium amount right of center -> medium turn to left */
-                    handle( -15 );
-                    motor( 38 ,50 );
+                    motor( 52 ,100 );
                     break;
 
                 case 0xc0:
                     /* Large amount right of center -> large turn to left */
-                    handle( -25 );
-                    motor( 19 ,30 );
+                    motor( 18 ,70 );
                     pattern = 13;
                     break;
 
@@ -253,7 +243,6 @@ void main(void)
         case 21:
             /* Processing at 1st cross line */
             led_out( 0x3 );
-            handle( 0 );
             motor( 0 ,0 );
             pattern = 22;
             cnt1 = 0;
@@ -272,8 +261,7 @@ void main(void)
             if( sensor_inp(MASK4_4)==0xf8 ) {
                 /* Left crank determined -> to left crank clearing processing */
                 led_out( 0x1 );
-                handle( -38 );
-                motor( 10 ,50 );
+                motor( 14 ,100 );
                 pattern = 31;
                 cnt1 = 0;
                 break;
@@ -281,8 +269,7 @@ void main(void)
             if( sensor_inp(MASK4_4)==0x1f ) {
                 /* Right crank determined -> to right crank clearing processing */
                 led_out( 0x2 );
-                handle( 38 );
-                motor( 50 ,10 );
+                motor( 100 ,17 );
                 pattern = 41;
                 cnt1 = 0;
                 break;
@@ -290,24 +277,21 @@ void main(void)
             switch( sensor_inp(MASK3_3) ) {
                 case 0x00:
                     /* Center -> straight */
-                    handle( 0 );
-                    motor( 40 ,40 );
+                    motor( 80 ,80 );
                     break;
                 case 0x04:
                 case 0x06:
                 case 0x07:
                 case 0x03:
                     /* Left of center -> turn to right */
-                    handle( 8 );
-                    motor( 40 ,35 );
+                    motor( 90 ,47 );
                     break;
                 case 0x20:
                 case 0x60:
                 case 0xe0:
                 case 0xc0:
                     /* Right of center -> turn to left */
-                    handle( -8 );
-                    motor( 35 ,40 );
+                    motor( 32 ,90 );
                     break;
             }
             break;
@@ -349,7 +333,6 @@ void main(void)
         case 51:
             /* Processing at 1st right half line detection */
             led_out( 0x2 );
-            handle( 0 );
             motor( 0 ,0 );
             pattern = 52;
             cnt1 = 0;
@@ -366,8 +349,7 @@ void main(void)
         case 53:
             /* Trace, lane change after right half line detection */
             if( sensor_inp(MASK4_4) == 0x00 ) {
-                handle( 15 );
-                motor( 40 ,31 );
+                motor( 90 ,42 );
                 pattern = 54;
                 cnt1 = 0;
                 break;
@@ -375,24 +357,21 @@ void main(void)
             switch( sensor_inp(MASK3_3) ) {
                 case 0x00:
                     /* Center -> straight */
-                    handle( 0 );
-                    motor( 40 ,40 );
+                    motor( 80 ,80 );
                     break;
                 case 0x04:
                 case 0x06:
                 case 0x07:
                 case 0x03:
                     /* Left of center -> turn to right */
-                    handle( 8 );
-                    motor( 40 ,35 );
+                    motor( 90 ,32 );
                     break;
                 case 0x20:
                 case 0x60:
                 case 0xe0:
                 case 0xc0:
                     /* Right of center -> turn to left */
-                    handle( -8 );
-                    motor( 35 ,40 );
+                    motor( 32 ,90 );
                     break;
                 default:
                     break;
@@ -411,7 +390,6 @@ void main(void)
         case 61:
             /* Processing at 1st left half line detection */
             led_out( 0x1 );
-            handle( 0 );
             motor( 0 ,0 );
             pattern = 62;
             cnt1 = 0;
@@ -428,8 +406,7 @@ void main(void)
         case 63:
             /* Trace, lane change after left half line detection */
             if( sensor_inp(MASK4_4) == 0x00 ) {
-                handle( -15 );
-                motor( 31 ,40 );
+                motor( 28 ,90 );
                 pattern = 64;
                 cnt1 = 0;
                 break;
@@ -437,24 +414,21 @@ void main(void)
             switch( sensor_inp(MASK3_3) ) {
                 case 0x00:
                     /* Center -> straight */
-                    handle( 0 );
-                    motor( 40 ,40 );
+                    motor( 80 ,80 );
                     break;
                 case 0x04:
                 case 0x06:
                 case 0x07:
                 case 0x03:
                     /* Left of center -> turn to right */
-                    handle( 8 );
-                    motor( 40 ,35 );
+                    motor( 90 ,32 );
                     break;
                 case 0x20:
                 case 0x60:
                 case 0xe0:
                 case 0xc0:
                     /* Right of center -> turn to left */
-                    handle( -8 );
-                    motor( 35 ,40 );
+                    motor( 32 ,90 );
                     break;
                 default:
                     break;
