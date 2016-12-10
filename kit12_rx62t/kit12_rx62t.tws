@@ -10,8 +10,8 @@
 [OPEN_WORKSPACE_FILES]
 "C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\kit12_rx62t.c" 
 [WORKSPACE_FILE_STATES]
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\kit12_rx62t.c" -8 -31 1279 488 1 0 
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\kit12_rx62t.c" -8 -31 751 197 1 0 
 [LOADED_PROJECTS]
 "kit12_rx62t" 
-"sioservo1_62t" 
+"kit12test_rx62t" 
 [END]

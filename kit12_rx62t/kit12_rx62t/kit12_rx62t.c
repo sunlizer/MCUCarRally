@@ -62,6 +62,8 @@ void handle( int angle );
 unsigned long   cnt0;
 unsigned long   cnt1;
 int             pattern;
+int right = 0;
+int left =0;
 
 /***********************************************************************/
 /* Main program                                                        */
@@ -249,7 +251,7 @@ void main(void)
 
         case 22:
             /* Read but ignore 2nd line */
-            if( cnt1 > 100 ){
+            if( cnt1 > 200 ){
                 pattern = 23;
                 cnt1 = 0;
             }
@@ -590,12 +592,14 @@ int check_crossline( void )
     unsigned char b;
     int ret;
 
+	right = 0;
+	left = 0;
     ret = 0;
     b = sensor_inp(MASK3_3);
     if( b==0xe7 ) {
         ret = 1;
     }
-    return ret;
+    else return ret;
 }
 
 /***********************************************************************/
@@ -606,13 +610,21 @@ int check_rightline( void )
 {
     unsigned char b;
     int ret;
+	
 
     ret = 0;
     b = sensor_inp(MASK4_4);
     if( b==0x1f ) {
         ret = 1;
+		right++;
+		left = 0;
     }
-    return ret;
+    //return ret;
+	if(right>2){
+		right = 0;
+		return 1;
+	}
+	else return 0;
 }
 
 /***********************************************************************/
@@ -628,8 +640,15 @@ int check_leftline( void )
     b = sensor_inp(MASK4_4);
     if( b==0xf8 ) {
         ret = 1;
+		left++;
+		right = 0;
     }
-    return ret;
+    //return ret;
+	if(left>2){
+		left = 0;
+		return 1;
+	}
+	else return 0;
 }
 
 /***********************************************************************/

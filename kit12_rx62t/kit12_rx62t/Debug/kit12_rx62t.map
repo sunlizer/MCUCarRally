@@ -1,4 +1,4 @@
-Optimizing Linkage Editor (V.10.02.00.000)        08-Dec-2016 22:40:48
+Optimizing Linkage Editor (V.10.02.00.000)        08-Dec-2016 22:58:56
 
 *** Options ***
 
@@ -38,11 +38,11 @@ R_2
 B
                                   00001000  0000140b       40c   4
 R
-                                  0000140c  0000140f         4   4
+                                  0000140c  00001417         c   4
 SU
-                                  00001410  0000170f       300   4
+                                  00001418  00001717       300   4
 SI
-                                  00001710  0000180f       100   4
+                                  00001718  00001817       100   4
 PResetPRG
                                   ffff8000  ffff8033        34   4
 C_1
@@ -58,20 +58,20 @@ C$BSEC
 C$VECT
                                   ffff8154  ffff8553       400   4
 D
-                                  ffff8554  ffff8557         4   4
+                                  ffff8554  ffff855f         c   4
 D_2
-                                  ffff8558  ffff8558         0   2
+                                  ffff8560  ffff8560         0   2
 D_1
-                                  ffff8558  ffff8558         0   1
+                                  ffff8560  ffff8560         0   1
 P
-                                  ffff8558  ffff8b7e       627   4
+                                  ffff8560  ffff8be4       685   4
 PIntPRG
-                                  ffff8b7f  ffff8b8f        11   1
+                                  ffff8be5  ffff8bf3         f   1
 W_1
-                                  ffff8b90  ffff8b90         0   4
+                                  ffff8bf4  ffff8bf4         0   4
 W_2
-                                  ffff8b90  ffff8b90         0   2
+                                  ffff8bf4  ffff8bf4         0   2
 W
-                                  ffff8b90  ffff8b90         0   4
+                                  ffff8bf4  ffff8bf4         0   4
 FIXEDVECT
                                   ffffffd0  ffffffff        30   4
