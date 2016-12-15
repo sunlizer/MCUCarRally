@@ -65,7 +65,7 @@ void led_out( unsigned char led );
 void motor( int accele_l, int accele_r );
 void handle( int angle );
 int getSensorError(void);
-
+void calculatePID(void);
 /*======================================*/
 /* Global variable declarations         */
 /*======================================*/
@@ -75,7 +75,18 @@ int             pattern;
 int right = 0;
 int left =0;
 int error = 0;
+int increamentSpeed = 0;
 
+/*======================================*/
+/* PID Calculation Variables            */
+/*======================================*/
+int pidOut = 0;
+int currentError = 0;
+double previousError = 0;
+double pidP = 1.3;
+double pidI = 0.000003;
+double pidD = 140883;
+double IMemory = 0.0;
 /***********************************************************************/
 /* Main program                                                        */
 /***********************************************************************/
@@ -84,13 +95,15 @@ void main(void)
     /* Initialize MCU functions */
     init();
 
+
     /* Initialize micom car state */
     motor( 0, 0 );
 	while( !pushsw_get()){}
 	
     while( 1 ) {
-		error = getSensorError();
-		motor( 80 + error, 80 - error);
+		currentError = getSensorError();
+		calculatePID();
+		motor( 90 + pidOut, 80 - pidOut);
     }
 }
 
@@ -230,16 +243,13 @@ unsigned char startbar_get( void )
 int check_crossline( void )
 {
     unsigned char b;
-    int ret;
-
 	right = 0;
 	left = 0;
-    ret = 0;
     b = sensor_inp(MASK3_3);
     if( b==0xe7 ) {
-        ret = 1;
+        return 1;
     }
-    else return ret;
+    else return 0;
 }
 
 /***********************************************************************/
@@ -249,13 +259,8 @@ int check_crossline( void )
 int check_rightline( void )
 {
     unsigned char b;
-    int ret;
-	
-
-    ret = 0;
     b = sensor_inp(MASK4_4);
     if( b==0x1f ) {
-        ret = 1;
 		right++;
 		left = 0;
     }
@@ -274,12 +279,8 @@ int check_rightline( void )
 int check_leftline( void )
 {
     unsigned char b;
-    int ret;
-
-    ret = 0;
     b = sensor_inp(MASK4_4);
     if( b==0xf8 ) {
-        ret = 1;
 		left++;
 		right = 0;
     }
@@ -364,11 +365,41 @@ void led_out( unsigned char led )
 /* Return value:    None                                               */
 /***********************************************************************/
 void motor( int accele_l, int accele_r )
-{
+{	
+	if(pidOut < 1 && pidOut > -1){
+		accele_l = 100;
+		accele_r = 100;
+	}
+	/*if(accele_l != 0 && accele_r != 0){
+		if(currentError == 0) increamentSpeed ++;
+		//else if(pidOut < 5 && pidOut > -5) increamentSpeed ++;
+		else increamentSpeed = 0;
+		if(pidOut < 1 && pidOut > -1){
+			accele_l += 20;
+			accele_r += 20;
+			IMemory = 0;
+		}
+		else if(currentError > -11 && currentError < 11){
+			accele_l += 10;
+			accele_r += 10;
+			IMemory = 0;
+		}
+		else if (pidOut < 5 && pidOut> -5){
+			accele_l += 10;
+			accele_r += 10;
+		}
+		else if (pidOut < 10 && pidOut> -10){
+			accele_l += 5;
+			accele_r += 5;
+		}
+	}*/
+	//accele_l += increamentSpeed;
+	//accele_r += increamentSpeed;
 	if(accele_l > 100)  accele_l = 100;
 	if(accele_l < -100) accele_l = -100;
 	if(accele_r > 100)  accele_r = 100;
 	if(accele_r < -100) accele_r = -100;
+	
     /* Left Motor Control */
     if( accele_l >= 0 ) {
         PORT7.DR.BYTE &= 0xef;
@@ -387,7 +418,6 @@ void motor( int accele_l, int accele_r )
         MTU4.TGRD = (long)( PWM_CYCLE - 1 ) * ( -accele_r ) / 100;
     }
 }
-
 /***********************************************************************/
 /* Servo steering operation                                            */
 /* Arguments:   servo operation angle: -90 to 90                       */
@@ -403,8 +433,8 @@ void handle( int angle )
 /***********************************************************************/
 /***********************************************************************/
 int getSensorError(void){
-	int totalError = 0;
-	int activeSensor = 0;
+	double totalError = 0;
+	double activeSensor = 0;
 	
 	if(sensor_inp(MASK4) == 0x80){
 		totalError -= 70;
@@ -444,9 +474,28 @@ int getSensorError(void){
 		led_out( 0x0 );
 	else if(activeSensor != 0)
 		led_out( 0x2 );
+	if(activeSensor == 0) return 0;
 	return totalError/activeSensor;
 
 }
+
+void calculatePID(void){
+	IMemory += pidI * currentError;
+	//if(IMemory > 75) IMemory = 75;
+	//else if(IMemory < -75) IMemory =-75;
+	pidOut = pidP * currentError + IMemory + pidD * (currentError - previousError);
+	//if(pidOut > 75) pidOut = 75;
+	//else if(pidOut < -75) pidOut =-75;
+	previousError = currentError;
+	
+}
+/*int pidOut = 0;
+int currentError = 0;
+int previousError = 0;
+double pidP = 0.0;
+double pidI = 0.0;
+double pidD = 0.0;
+double IMemory = 0.0;*/
 /***********************************************************************/
 /* end of file                                                         */
 /***********************************************************************/
