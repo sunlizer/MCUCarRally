@@ -87,6 +87,7 @@ double pidP = 1.3;
 double pidI = 0.000003;
 double pidD = 140883;
 double IMemory = 0.0;
+int direction = 0;
 /***********************************************************************/
 /* Main program                                                        */
 /***********************************************************************/
@@ -98,12 +99,50 @@ void main(void)
 
     /* Initialize micom car state */
     motor( 0, 0 );
+	led_out(0x0);
 	while( !pushsw_get()){}
 	
     while( 1 ) {
+		if(direction == 0){
+			if(check_crossline()){
+				led_out(0x3);
+				motor(100,100);
+				direction = 1;
+				timer(200);
+			}
+			else if(check_rightline()){
+				led_out(0x1);
+				motor(100,100);
+				direction = 2;
+				timer(200);
+			}
+			else if (check_leftline()){
+				led_out(0x2);
+				direction = 3;
+				timer(300);
+			}
+		}
+		else if(direction == 1){
+			if(check_rightline()){
+				direction = 0;
+				timer(50);
+				motor(0,0);
+				motor( 100, -100);
+				timer(400);
+				led_out(0x0);
+			}
+			else if (check_leftline()){
+				direction = 0;
+				timer(50);
+				motor(0,0);
+				motor( -100, 100);
+				timer(400);
+				led_out(0x0);
+			}
+		}
 		currentError = getSensorError();
 		calculatePID();
-		motor( 90 + pidOut, 80 - pidOut);
+		motor( 80 + pidOut, 80 - pidOut);
     }
 }
 
@@ -366,11 +405,12 @@ void led_out( unsigned char led )
 /***********************************************************************/
 void motor( int accele_l, int accele_r )
 {	
+	/*
 	if(pidOut < 1 && pidOut > -1){
 		accele_l = 100;
 		accele_r = 100;
 	}
-	/*if(accele_l != 0 && accele_r != 0){
+	if(accele_l != 0 && accele_r != 0){
 		if(currentError == 0) increamentSpeed ++;
 		//else if(pidOut < 5 && pidOut > -5) increamentSpeed ++;
 		else increamentSpeed = 0;
@@ -399,7 +439,10 @@ void motor( int accele_l, int accele_r )
 	if(accele_l < -100) accele_l = -100;
 	if(accele_r > 100)  accele_r = 100;
 	if(accele_r < -100) accele_r = -100;
-	
+	if (direction != 0){
+		accele_l -= 20;
+		accele_r -= 20;
+	}
     /* Left Motor Control */
     if( accele_l >= 0 ) {
         PORT7.DR.BYTE &= 0xef;
@@ -468,12 +511,6 @@ int getSensorError(void){
 		totalError += 70;
 		activeSensor++;
 	}
-	if(activeSensor == 1)
-		led_out( 0x1 );
-	else if(activeSensor == 0)
-		led_out( 0x0 );
-	else if(activeSensor != 0)
-		led_out( 0x2 );
 	if(activeSensor == 0) return 0;
 	return totalError/activeSensor;
 
@@ -481,7 +518,7 @@ int getSensorError(void){
 
 void calculatePID(void){
 	IMemory += pidI * currentError;
-	//if(IMemory > 75) IMemory = 75;
+	//ifurre(IMemory > 75) IMemory = 75;
 	//else if(IMemory < -75) IMemory =-75;
 	pidOut = pidP * currentError + IMemory + pidD * (currentError - previousError);
 	//if(pidOut > 75) pidOut = 75;
