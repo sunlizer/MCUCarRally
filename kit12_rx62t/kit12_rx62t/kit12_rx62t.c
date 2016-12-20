@@ -119,7 +119,7 @@ void main(void)
 			else if (check_leftline()){
 				led_out(0x2);
 				direction = 3;
-				timer(300);
+				timer(200);
 			}
 		}
 		else if(direction == 1){
@@ -127,6 +127,7 @@ void main(void)
 				direction = 0;
 				timer(50);
 				motor(0,0);
+				pidOut = 20;
 				motor( 100, -100);
 				timer(400);
 				led_out(0x0);
@@ -135,8 +136,27 @@ void main(void)
 				direction = 0;
 				timer(50);
 				motor(0,0);
+				pidOut = -20;
 				motor( -100, 100);
 				timer(400);
+				led_out(0x0);
+			}
+		}
+		else if(direction == 2){
+			if(sensor_inp(MASK4_4) == 0x00){
+				led_out(0x3);
+				motor( 100, 33);
+				while (getSensorError() > -10){}
+				direction = 0; 
+				led_out(0x0);
+			}
+		}
+		else if(direction == 3){
+			if(sensor_inp(MASK4_4) == 0x00){
+				led_out(0x3);
+				motor( 33, 100);
+				while (getSensorError() > -10){}
+				direction = 0; 
 				led_out(0x0);
 			}
 		}
@@ -299,12 +319,12 @@ int check_rightline( void )
 {
     unsigned char b;
     b = sensor_inp(MASK4_4);
-    if( b==0x1f ) {
+    if( b==0x1f) {
 		right++;
 		left = 0;
     }
     //return ret;
-	if(right>2){
+	if(right==1){
 		right = 0;
 		return 1;
 	}
@@ -319,12 +339,12 @@ int check_leftline( void )
 {
     unsigned char b;
     b = sensor_inp(MASK4_4);
-    if( b==0xf8 ) {
+    if( b==0xf8) {
 		left++;
 		right = 0;
     }
     //return ret;
-	if(left>2){
+	if(left==1){
 		left = 0;
 		return 1;
 	}
