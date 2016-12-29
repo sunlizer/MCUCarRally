@@ -37,6 +37,7 @@ This program supports the following boards:
 #define MASK4_0         0xf0            /* O O O O  X X X X            */
 #define MASK0_4         0x0f            /* X X X X  O O O O            */
 #define MASK4_4         0xff            /* O O O O  O O O O            */
+#define MASK1_1         0x18            /* X X X O  O X X X            */
 /* Masked value for PID ************************************************/
 #define MASK4         0x80            /* O X X X  X X X X              */
 #define MASK3         0x40            /* X O X X  X X X X              */
@@ -104,13 +105,7 @@ void main(void)
 	
     while( 1 ) {
 		if(direction == 0){
-			if(check_crossline()){
-				led_out(0x3);
-				motor(100,100);
-				direction = 1;
-				timer(200);
-			}
-			else if(check_rightline()){
+			if(check_rightline()){
 				led_out(0x1);
 				motor(100,100);
 				direction = 2;
@@ -119,11 +114,33 @@ void main(void)
 			else if (check_leftline()){
 				led_out(0x2);
 				direction = 3;
+				motor(100,100);
 				timer(200);
 			}
 		}
-		else if(direction == 1){
+		else if (direction != 0){
+			if(sensor_inp(MASK4_4) == 0x00){
+				led_out(0x3);
+				timer(100);
+				if(direction == 2){
+					motor( 100, 33);
+					while (sensor_inp(MASK1_1) == 0x00){}
+					motor( 33, 100);
+					timer(100);
+					direction = 0; 
+					led_out(0x0);
+				}
+				else if(direction == 3){
+					motor( 33, 100);
+					while (sensor_inp(MASK1_1) == 0x00){}
+					motor( 100, 33);
+					timer(100);
+					direction = 0; 
+					led_out(0x0);
+				}
+			}
 			if(check_rightline()){
+				led_out(0x3);
 				direction = 0;
 				timer(50);
 				motor(0,0);
@@ -131,33 +148,17 @@ void main(void)
 				motor( 100, -100);
 				timer(400);
 				led_out(0x0);
+			
 			}
 			else if (check_leftline()){
+				led_out(0x3);
 				direction = 0;
 				timer(50);
 				motor(0,0);
 				pidOut = -20;
 				motor( -100, 100);
 				timer(400);
-				led_out(0x0);
-			}
-		}
-		else if(direction == 2){
-			if(sensor_inp(MASK4_4) == 0x00){
-				led_out(0x3);
-				motor( 100, 33);
-				while (getSensorError() > -10){}
-				direction = 0; 
-				led_out(0x0);
-			}
-		}
-		else if(direction == 3){
-			if(sensor_inp(MASK4_4) == 0x00){
-				led_out(0x3);
-				motor( 33, 100);
-				while (getSensorError() > -10){}
-				direction = 0; 
-				led_out(0x0);
+				led_out(0x0);			
 			}
 		}
 		currentError = getSensorError();
@@ -319,16 +320,10 @@ int check_rightline( void )
 {
     unsigned char b;
     b = sensor_inp(MASK4_4);
-    if( b==0x1f) {
-		right++;
-		left = 0;
-    }
-    //return ret;
-	if(right==1){
-		right = 0;
+    if( b==0x1f || b==0x0f) {
 		return 1;
-	}
-	else return 0;
+    }
+	return 0;
 }
 
 /***********************************************************************/
@@ -339,16 +334,10 @@ int check_leftline( void )
 {
     unsigned char b;
     b = sensor_inp(MASK4_4);
-    if( b==0xf8) {
-		left++;
-		right = 0;
-    }
-    //return ret;
-	if(left==1){
-		left = 0;
+	if( b==0xf8 || b==0xf0) {
 		return 1;
-	}
-	else return 0;
+    }
+ 	return 0;
 }
 
 /***********************************************************************/
@@ -455,14 +444,14 @@ void motor( int accele_l, int accele_r )
 	}*/
 	//accele_l += increamentSpeed;
 	//accele_r += increamentSpeed;
-	if(accele_l > 100)  accele_l = 100;
-	if(accele_l < -100) accele_l = -100;
-	if(accele_r > 100)  accele_r = 100;
-	if(accele_r < -100) accele_r = -100;
 	if (direction != 0){
 		accele_l -= 20;
 		accele_r -= 20;
 	}
+	if(accele_l > 100)  accele_l = 100;
+	if(accele_l < -100) accele_l = -100;
+	if(accele_r > 100)  accele_r = 100;
+	if(accele_r < -100) accele_r = -100;
     /* Left Motor Control */
     if( accele_l >= 0 ) {
         PORT7.DR.BYTE &= 0xef;
