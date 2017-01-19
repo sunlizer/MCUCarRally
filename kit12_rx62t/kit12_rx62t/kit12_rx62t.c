@@ -163,7 +163,16 @@ void main(void)
 		}
 		currentError = getSensorError();
 		calculatePID();
-		motor( 80 + pidOut, 80 - pidOut);
+		if(pidOut>5){
+			motor( 100, 100 - pidOut);
+		}
+		else if(pidOut<-5){
+			motor( 100 + pidOut, 100);
+		}
+		else {
+			motor( 95 + pidOut, 95 - pidOut);
+		}
+		//motor( 80 + pidOut, 80 - pidOut);
     }
 }
 
