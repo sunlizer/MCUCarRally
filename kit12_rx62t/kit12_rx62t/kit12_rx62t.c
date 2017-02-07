@@ -84,11 +84,16 @@ int increamentSpeed = 0;
 int pidOut = 0;
 int currentError = 0;
 double previousError = 0;
-double pidP = 1.3;
-double pidI = 0.000003;
-double pidD = 140883;
+double pidP = 1;
+double pidI = 0;
+double pidD = 0;
 double IMemory = 0.0;
 int direction = 0;
+int initialSpeed = 50;
+int turnTimeout = 300;
+int IBound = 5;
+int maxSpeed = 75;
+int doNotCareTimeout = 100;
 /***********************************************************************/
 /* Main program                                                        */
 /***********************************************************************/
@@ -99,23 +104,23 @@ void main(void)
 
 
     /* Initialize micom car state */
-    motor( 0, 0 );
-	led_out(0x0);
+	led_out(0x3);
 	while( !pushsw_get()){}
+	led_out(0x0);
 	
     while( 1 ) {
 		if(direction == 0){
-			if(check_rightline()){
+			if(check_rightline() || check_crossline()){
 				led_out(0x1);
-				motor(100,100);
+				motor(maxSpeed,maxSpeed);
 				direction = 2;
-				timer(200);
+				timer(75);
 			}
-			else if (check_leftline()){
+			else if (check_leftline() || check_crossline()){
 				led_out(0x2);
 				direction = 3;
-				motor(100,100);
-				timer(200);
+				motor(maxSpeed,maxSpeed);
+				timer(75);
 			}
 		}
 		else if (direction != 0){
@@ -123,17 +128,17 @@ void main(void)
 				led_out(0x3);
 				timer(100);
 				if(direction == 2){
-					motor( 100, 33);
+					motor( maxSpeed, maxSpeed/3);
 					while (sensor_inp(MASK1_1) == 0x00){}
-					motor( 33, 100);
+					motor( maxSpeed/3, maxSpeed);
 					timer(100);
 					direction = 0; 
 					led_out(0x0);
 				}
 				else if(direction == 3){
-					motor( 33, 100);
+					motor( maxSpeed/3, maxSpeed);
 					while (sensor_inp(MASK1_1) == 0x00){}
-					motor( 100, 33);
+					motor( maxSpeed, maxSpeed/3);
 					timer(100);
 					direction = 0; 
 					led_out(0x0);
@@ -144,9 +149,9 @@ void main(void)
 				direction = 0;
 				timer(50);
 				motor(0,0);
-				pidOut = 20;
-				motor( 100, -100);
-				timer(400);
+				pidOut = 5;
+				motor( 50, -50);
+				timer(turnTimeout);
 				led_out(0x0);
 			
 			}
@@ -155,15 +160,15 @@ void main(void)
 				direction = 0;
 				timer(50);
 				motor(0,0);
-				pidOut = -20;
-				motor( -100, 100);
-				timer(400);
+				pidOut = -5;
+				motor( -50, 50);
+				timer(turnTimeout);
 				led_out(0x0);			
 			}
 		}
 		currentError = getSensorError();
 		calculatePID();
-		motor( 80 + pidOut, 80 - pidOut);
+		motor( initialSpeed + pidOut, initialSpeed - pidOut);
     }
 }
 
@@ -444,10 +449,11 @@ void motor( int accele_l, int accele_r )
 	}*/
 	//accele_l += increamentSpeed;
 	//accele_r += increamentSpeed;
-	if (direction != 0){
-		accele_l -= 20;
-		accele_r -= 20;
-	}
+	/*if (direction != 0){
+		accele_l -= 30;
+		accele_r -= 30;
+	}*/
+	accele_l=-accele_l;
 	if(accele_l > 100)  accele_l = 100;
 	if(accele_l < -100) accele_l = -100;
 	if(accele_r > 100)  accele_r = 100;
@@ -527,8 +533,8 @@ int getSensorError(void){
 
 void calculatePID(void){
 	IMemory += pidI * currentError;
-	//ifurre(IMemory > 75) IMemory = 75;
-	//else if(IMemory < -75) IMemory =-75;
+	if(IMemory > IBound) IMemory = IBound;
+	else if(IMemory < -IBound) IMemory =-IBound;
 	pidOut = pidP * currentError + IMemory + pidD * (currentError - previousError);
 	//if(pidOut > 75) pidOut = 75;
 	//else if(pidOut < -75) pidOut =-75;
