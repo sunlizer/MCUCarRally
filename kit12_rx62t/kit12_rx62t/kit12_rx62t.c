@@ -47,6 +47,21 @@ This program supports the following boards:
 #define MASK_2        0x04            /* X X X X  X 0 X X              */
 #define MASK_3        0x02            /* X X X X  X X O X              */
 #define MASK_4        0x01            /* X X X X  X X X O              */
+/* Masked value for PID ************************************************/
+#define MASKe0        0xe0            /* O O O X  X X X X              */
+#define MASK70        0x70            /* X O O O  X X X X              */
+#define MASK38        0x38            /* X X O O  O X X X              */
+#define MASK1c        0x1c            /* X X X O  O O X X              */
+#define MASK0e        0x0e            /* X X X X  O O O X              */
+#define MASK07        0x07            /* X X X X  X 0 O O              */
+#define MASKc0        0xc0            /* O O X X  X X X X              */
+#define MASK60        0x60            /* X O O X  X X X X              */
+#define MASK30        0x30            /* X X O O  X X X X              */
+#define MASK18        0x18            /* X X X O  O X X X              */
+#define MASK0c        0x0c            /* X X X X  O O X X              */
+#define MASK06        0x06            /* X X X X  X 0 O X              */
+#define MASK03        0x03            /* X X X X  X X O O              */
+
 
 /*======================================*/
 /* Prototype declarations               */
@@ -67,6 +82,8 @@ void motor( int accele_l, int accele_r );
 void handle( int angle );
 int getSensorError(void);
 void calculatePID(void);
+unsigned char Mask( unsigned char sensor, unsigned char mask );
+unsigned char getSensorValue();
 /*======================================*/
 /* Global variable declarations         */
 /*======================================*/
@@ -84,16 +101,20 @@ int increamentSpeed = 0;
 int pidOut = 0;
 int currentError = 0;
 double previousError = 0;
-double pidP = 1;
+double pidP = 20;
 double pidI = 0;
 double pidD = 0;
 double IMemory = 0.0;
 int direction = 0;
-int initialSpeed = 50;
+int initialSpeed = 60;
 int turnTimeout = 300;
 int IBound = 5;
-int maxSpeed = 75;
+int DBound =5;
+double integral = 0.0;
+int maxSpeed = 60;
 int doNotCareTimeout = 100;
+double leftSpeed =0.0;
+double rightSpeed=0.0;
 /***********************************************************************/
 /* Main program                                                        */
 /***********************************************************************/
@@ -101,7 +122,6 @@ void main(void)
 {
     /* Initialize MCU functions */
     init();
-
 
     /* Initialize micom car state */
 	led_out(0x3);
@@ -114,13 +134,13 @@ void main(void)
 				led_out(0x1);
 				motor(maxSpeed,maxSpeed);
 				direction = 2;
-				timer(75);
+				timer(100);
 			}
 			else if (check_leftline() || check_crossline()){
 				led_out(0x2);
 				direction = 3;
 				motor(maxSpeed,maxSpeed);
-				timer(75);
+				timer(100);
 			}
 		}
 		else if (direction != 0){
@@ -128,17 +148,17 @@ void main(void)
 				led_out(0x3);
 				timer(100);
 				if(direction == 2){
-					motor( maxSpeed, maxSpeed/3);
+					motor( maxSpeed, maxSpeed/5);
 					while (sensor_inp(MASK1_1) == 0x00){}
-					motor( maxSpeed/3, maxSpeed);
+					motor( maxSpeed/5, maxSpeed);
 					timer(100);
 					direction = 0; 
 					led_out(0x0);
 				}
 				else if(direction == 3){
-					motor( maxSpeed/3, maxSpeed);
+					motor( maxSpeed/5, maxSpeed);
 					while (sensor_inp(MASK1_1) == 0x00){}
-					motor( maxSpeed, maxSpeed/3);
+					motor( maxSpeed, maxSpeed/5);
 					timer(100);
 					direction = 0; 
 					led_out(0x0);
@@ -149,8 +169,7 @@ void main(void)
 				direction = 0;
 				timer(50);
 				motor(0,0);
-				pidOut = 5;
-				motor( 50, -50);
+				motor( maxSpeed, -maxSpeed);
 				timer(turnTimeout);
 				led_out(0x0);
 			
@@ -160,15 +179,23 @@ void main(void)
 				direction = 0;
 				timer(50);
 				motor(0,0);
-				pidOut = -5;
-				motor( -50, 50);
+				motor( -maxSpeed, maxSpeed);
 				timer(turnTimeout);
 				led_out(0x0);			
 			}
 		}
 		currentError = getSensorError();
 		calculatePID();
-		motor( initialSpeed + pidOut, initialSpeed - pidOut);
+		leftSpeed=initialSpeed + pidOut;
+		rightSpeed=initialSpeed - pidOut;
+		
+		if ( leftSpeed > 100){leftSpeed = maxSpeed;}
+		else if ( leftSpeed < -100){leftSpeed =-1*maxSpeed;}
+		
+		if ( rightSpeed <-100){rightSpeed = -1*maxSpeed;}
+		else if ( rightSpeed >100){rightSpeed =maxSpeed;}
+			
+		motor( leftSpeed, rightSpeed);
     }
 }
 
@@ -286,6 +313,31 @@ unsigned char sensor_inp( unsigned char mask )
 
     return sensor;
 }
+
+/***********************************************************************/
+/* Sensor state detection without masks                                */
+/* Return values:   sensor value                                       */
+/***********************************************************************/
+unsigned char getSensorValue()
+{
+    unsigned char sensor;
+
+    sensor  = ~PORT4.PORT.BYTE;
+    return sensor;
+}
+/***********************************************************************/
+/* mask the sensor value                                               */
+/* Arguments:       sensor value values                                */
+/* Arguments:       masked values                                      */
+/* Return values:   sensor value with mask                             */
+/***********************************************************************/
+unsigned char Mask( unsigned char sensor, unsigned char mask )
+{
+    sensor &= mask;
+    return sensor;
+}
+
+
 
 /***********************************************************************/
 /* Read start bar detection sensor                                     */
@@ -449,10 +501,10 @@ void motor( int accele_l, int accele_r )
 	}*/
 	//accele_l += increamentSpeed;
 	//accele_r += increamentSpeed;
-	/*if (direction != 0){
-		accele_l -= 30;
-		accele_r -= 30;
-	}*/
+	if (direction != 0){
+		accele_l -= 10;
+		accele_r -= 10;
+	}
 	accele_l=-accele_l;
 	if(accele_l > 100)  accele_l = 100;
 	if(accele_l < -100) accele_l = -100;
@@ -491,51 +543,177 @@ void handle( int angle )
 /***********************************************************************/
 /***********************************************************************/
 int getSensorError(void){
-	double totalError = 0;
-	double activeSensor = 0;
+	unsigned char sensorValue = getSensorValue();
 	
-	if(sensor_inp(MASK4) == 0x80){
-		totalError -= 70;
-		activeSensor++;
-	}	
-	if(sensor_inp(MASK3) == 0x40){
-		totalError -= 50;
-		activeSensor++;
+	if(Mask(sensorValue, MASKe0) == 0xe0){
+		return -5;
 	}
-	if(sensor_inp(MASK2) == 0x20){
-		totalError -= 30;
-		activeSensor++;
+	else if(Mask(sensorValue, MASK70 == 0x70)){
+		return -3;
 	}
-	if(sensor_inp(MASK1) == 0x10){
-		totalError -= 10;
-		activeSensor++;
+	else if(Mask(sensorValue, MASK38 == 0x38)){
+		return -1;
 	}
-	if(sensor_inp(MASK_1) == 0x08){
-		totalError += 10;
-		activeSensor++;
-	}	
-	if(sensor_inp(MASK_2) == 0x04){
-		totalError += 30;
-		activeSensor++;
+	else if(Mask(sensorValue, MASK1c) == 0x1c){
+		return 1;
 	}
-	if(sensor_inp(MASK_3) == 0x02){
-		totalError += 50;
-		activeSensor++;
+	else if(Mask(sensorValue, MASK0e) == 0x0e){
+		return 3;
 	}
-	if(sensor_inp(MASK_4) == 0x01){
-		totalError += 70;
-		activeSensor++;
+	else if(Mask(sensorValue, MASK07) == 0x07){
+		return 5;
 	}
-	if(activeSensor == 0) return 0;
-	return totalError/activeSensor;
+	else if(Mask(sensorValue, MASKc0) == 0xc0){
+		return -6;
+	}
+	else if(Mask(sensorValue, MASK60) == 0x60){
+		return -4;
+	}
+	else if(Mask(sensorValue, MASK30) == 0x30){
+		return -2;
+	}
+	else if(Mask(sensorValue, MASK0c) == 0x0c){
+		return 2;
+	}else if(Mask(sensorValue, MASK0c) == 0x06){
+		return 4;
+	}
+	else if(Mask(sensorValue, MASK03) == 0x03){
+		return 6;
+	}
+	else if(Mask(sensorValue, MASK4) == 0x80){
+		return -7;
+	}
+	else if(Mask(sensorValue, MASK3) == 0x40){
+		return -5;
+	}
+	else if(Mask(sensorValue, MASK2) == 0x20){
+		return -3;
+	}
+	else if(Mask(sensorValue, MASK1) == 0x10){
+		return -1;
+	}
+	else if(Mask(sensorValue, MASK_1) == 0x08){
+		return 1;
+	}
+	else if(Mask(sensorValue, MASK_2) == 0x04){
+		return 3;
+	}
+	else if(Mask(sensorValue, MASK_3) == 0x0c){
+		return 5;
+	}
+	else if(Mask(sensorValue, MASK_4) == 0x01){
+		return 7;
+	}
+	else {
+		return 0;
+	}
+	
+/*	
+	double totalError = 0;
+	switch (sensor_inp(MASK4_4))
+	{
+//////////////////////////////////////////////			3'lü durumlar
+		case 0xD0:
+			totalError = -5 ;
+			break;
+			
+		case 0x70:
+			totalError = -3 ;
+			break;
+			
+		case 0x38:
+			totalError = -1;
+			break;
+			
+		case 0x1C:
+			totalError = 1 ;
+			break;
+			
+		case 0x0D:
+			totalError = 3 ;
+			break;
+			
+		case 0x07:
+			totalError = 5 ;
+			break;
+//////////////////////////////////////////////			2'li durumlar
+		case 0xC0:
+			totalError = -6 ;
+			break;
+			
+		case 0x60:
+			totalError = -4 ;
+			break;
+			
+		case 0x30:
+			totalError = -2;
+			break;
+			
+		case 0x0C:
+			totalError = 2 ;
+			break;
+			
+		case 0x06:
+			totalError = 4 ;
+			break;
+			
+		case 0x03:
+			totalError = 6 ;
+			break;
+//////////////////////////////////////////////			1'li durumlar
+		case 0x80:
+			totalError = -7 ;
+			break;
+			
+		case 0x40:
+			totalError = -5 ;
+			break;
+			
+		case 0x20:
+			totalError = -3 ;
+			break;
+			
+		case 0x10:
+			totalError = -1 ;
+			break;
+			
+		case 0x08:
+			totalError = 1;
+			break;
+			
+		case 0x04:
+			totalError = 3 ;
+			break;
+			
+		case 0x02:
+			totalError = 5 ;
+			break;
+			
+		case 0x01:
+			totalError = 7 ;
+			break;
+			
+		default:
+			totalError = 0 ;		//// diðer durumlarda hata oluþmasýn 
+			break;
+	}		
+	
+	return totalError;*/
 
 }
 
 void calculatePID(void){
 	IMemory += pidI * currentError;
-	if(IMemory > IBound) IMemory = IBound;
+	
+/*	if(IMemory > IBound) IMemory = IBound;
 	else if(IMemory < -IBound) IMemory =-IBound;
-	pidOut = pidP * currentError + IMemory + pidD * (currentError - previousError);
+*/	
+	integral = pidD * (currentError - previousError);
+	
+/*	if(integral > DBound) integral = DBound;
+	else if(integral < -DBound) integral =-DBound;
+*/	
+	pidOut = pidP * currentError + IMemory +integral;
 	//if(pidOut > 75) pidOut = 75;
 	//else if(pidOut < -75) pidOut =-75;
 	previousError = currentError;
