@@ -26,7 +26,7 @@ This program supports the following boards:
 
 /* Constant settings */
 #define PWM_CYCLE       24575           /* Motor PWM period (16ms)     */
-#define SERVO_CENTER    2560            /* Servo center value          */
+#define SERVO_CENTER    1524            /* Servo center value          */
 #define HANDLE_STEP     13              /* 1 degree value              */
 
 /* Masked value settings X:masked (disabled) O:not masked (enabled) */
@@ -248,7 +248,7 @@ void main(void)
 				case 0x40:
 				case 0x60:
 				case 0xe0:
-					handle(47);
+					handle(44);
 					motor(240,240);
 					motor(400, 140);
 					break;
@@ -260,7 +260,7 @@ void main(void)
 				case 0x07:
 				case 0x0e:
 				case 0x0c:
-					handle(-47);
+					handle(-44);
 					motor(240, 240);
 					motor(140, 400);
 					break;
@@ -330,7 +330,7 @@ void main(void)
 					case 0x60: //0110 0000
 					case 0xe0: //1110 0000
 					case 0x70: //0111 0000
-						handle(47);
+						handle(44);
 						motor(240, 240);
 						motor(400, 140);
 						break;// 1100 0000
@@ -343,7 +343,7 @@ void main(void)
 					case 0x06: //0000 0110
 					case 0x0e: //0000 1110
 					case 0x0c: //0000 1100
-						handle(-47);
+						handle(-44);
 						motor(240, 240);
 						motor(140, 400);
 						break;// 0000 1100
@@ -362,7 +362,7 @@ void main(void)
 						case 0x60:
 						case 0xe0:
 						case 0x70:
-							handle(47);
+							handle(44);
 							motor( 370,120 );//130
 							break;// 0000 1100
 
@@ -371,7 +371,7 @@ void main(void)
 						case 0x06:
 						case 0x07:
 						case 0x0e:
-							handle(-47);
+							handle(-44);
 							motor( 120, 370 );//130
 							break;// 0000 1100
 						}
@@ -386,7 +386,7 @@ void main(void)
 							case 0x03:
 							case 0x81:
 							case 0x80:
-								handle(47);
+								handle(44);
 								motor(370,120 );//130
 								break;// 0000 1100
 								/*it is left.*/
@@ -394,7 +394,7 @@ void main(void)
 							case 0x06:
 							case 0x0c:
 							case 0x08:
-								handle(-47);
+								handle(-44);
 								motor( 120, 370 );//130
 								break;// 0000 1100
 							}
@@ -409,7 +409,7 @@ void main(void)
 								case 0x70:
 								case 0x30:
 								case 0x10:
-									handle(47);
+									handle(44);
 									motor( 370,120 );//130
 									break;// 0000 1100
 
@@ -419,7 +419,7 @@ void main(void)
 								case 0x81:
 								case 0x01:
 								case 0x03:
-									handle(-47);
+									handle(-44);
 									motor( 370,120);//130
 									break;// 0000 1100
 								}
@@ -434,7 +434,7 @@ void main(void)
 									case 0x70:
 									case 0x30:
 									case 0x10:
-										handle(47);
+										handle(44);
 										motor( 370,120 );//130
 										break;// 0000 1100
 
@@ -444,7 +444,7 @@ void main(void)
 									case 0x03:
 									case 0x07:
 									case 0x06:
-										handle(-47);
+										handle(-44);
 										motor( 120,370 );//130
 										break;// 0000 1100
 
@@ -481,7 +481,7 @@ void main(void)
 				if( sensor_inp(MASK4_4)== 0xf8 || sensor_inp(MASK4_4)== 0xf0 || sensor_inp(MASK4_4)== 0xfc || sensor_inp(MASK4_4)== 0xfe  ) {
 					/* Left crank determined -> to left crank clearing processing */
 					led_out( 0x1 );
-					handle( -48 );
+					handle( -44 );
 					motor( -200 ,400 );
 					pattern = 31;
 					cnt1 = 0;
@@ -490,7 +490,7 @@ void main(void)
 				if( sensor_inp(MASK4_4)== 0x1f || sensor_inp(MASK4_4)== 0x0f || sensor_inp(MASK4_4)== 0x3f || sensor_inp(MASK4_4)== 0x7f  ) {
 					/* Right crank determined -> to right crank clearing processing */
 					led_out( 0x2 );
-					handle( 48 );
+					handle( 44 );
 					motor( 400 ,-200 );
 					pattern = 41;
 					cnt1 = 0;
@@ -1037,8 +1037,8 @@ void motor( int accele_l, int accele_r )
 	int    sw_data;
 
 	sw_data = dipsw_get() + 5;
-	accele_l = accele_l / -4;
-	accele_r = accele_r / 4;
+	accele_l = accele_l / -5.7;
+	accele_r = accele_r / 5.7;
 
 	/* Left Motor Control */
 	if( accele_l >= 0 ) {
