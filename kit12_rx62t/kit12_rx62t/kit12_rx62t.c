@@ -173,13 +173,7 @@ void main(void)
 			case 0x18:	//0001 1000
 				/* Center -> straight */
 				handle( 0 );
-				if(cnt1 < 500)//200
-					motor(400, 400);
-				else if(cnt1 >= 500 && cnt1 < 1000)
-					motor(350,350);
-				else if(cnt1 >= 1000 && cnt1 < 1500)
-					motor(300,300);//250
-				else cnt1 = 0;
+				motor(400, 400);
 				break;
 
 				/*  **********
@@ -193,78 +187,33 @@ void main(void)
 				 ************/
 			case 0x08:	//0000 1000
 				handle(2);
-				if(cnt1 < 500)//200
-					motor(400, 400);
-				else if(cnt1 >= 500 && cnt1 < 1000)
-					motor(350,350);
-				else if(cnt1 >= 1000 && cnt1 < 1500)
-					motor(300,300);//250
-				else cnt1 = 0;
+				motor(390, 390);
 				break;
 
 			case 0x0c: //0000 1100
 				handle(6);
-				if(cnt1 < 500)//200
-					motor(400, 400);
-				else if(cnt1 >= 500 && cnt1 < 1000)
-					motor(350,350);
-				else if(cnt1 >= 1000 && cnt1 < 1500)
-					motor(300,300);//250
-				else cnt1 = 0;
+				motor(380, 380);
 				break;
 
 			case 0x04:	//0000 0100
 				handle(10);
-				if(cnt1 < 500)//200
-					motor(400, 400);
-				else if(cnt1 >= 500 && cnt1 < 1000)
-					motor(350,350);
-				else if(cnt1 >= 1000 && cnt1 < 1500)
-					motor(300,300);//250
-				else cnt1 = 0;
+				motor(350, 350);
 				break;
 
 			case 0x0e: //0000 1110
 			case 0x06:	//0000 0110
 				handle( 20 );	//can be tried from 15 to 24
-				motor( 390 ,270 );//380,260
+				motor( 259 ,189 );//370,270
 				break;
 
 			case 0x02: //0000 0010
 				handle( 30 );
-				motor( 390 ,230 );//380,215
+				motor( 273 ,161 );//390,230
 				break;
 
 			case 0x03:	//0000 0011
-				timer(5);
-				switch (sensor_inp(MASK4_4)){
-
-				/*It is right.*/
-				case 0x83:
-				case 0x81:
-				case 0x01:
-				case 0x80:
-				case 0xc0:
-				case 0x40:
-				case 0x60:
-				case 0xe0:
-					handle(44);
-					motor(240,240);
-					motor(400, 140);
-					break;
-
-					/*It must be left.*/
-				case 0x06:
-				case 0x02:
-				case 0x04:
-				case 0x07:
-				case 0x0e:
-				case 0x0c:
-					handle(-44);
-					motor(240, 240);
-					motor(140, 400);
-					break;
-				}
+				handle(44);
+				motor(400, 140);
 				break;
 
 				/*   **********
@@ -278,184 +227,34 @@ void main(void)
 				 ************/
 				case 0x10: // 0001 0000
 					handle(-2);
-					if(cnt1 < 500)//200
-						motor(400, 400);
-					else if(cnt1 >= 500 && cnt1 < 1000)
-						motor(350,350);
-					else if(cnt1 >= 1000 && cnt1 < 1500)
-						motor(300,300);//250
-					else cnt1 = 0;
+					motor(390, 390);
 					break;
 
 				case 0x30:
 					handle(-6);
-					if(cnt1 < 500)//200
-						motor(400, 400);
-					else if(cnt1 >= 500 && cnt1 < 1000)
-						motor(350,350);
-					else if(cnt1 >= 1000 && cnt1 < 1500)
-						motor(300,300);//250
-					else cnt1 = 0;
+					motor(380, 380);
 					break;
 
 				case 0x20: // 0010 0000
 					handle( -10 );
-					if(cnt1 < 500)//200
-						motor(400, 400);
-					else if(cnt1 >= 500 && cnt1 < 1000)
-						motor(350,350);
-					else if(cnt1 >= 1000 && cnt1 < 1500)
-						motor(300,300);//250
-					else cnt1 = 0;
+					motor(350, 350);
 					break;
 
 				case 0x70: // 0111 0000
 				case 0x60: // 0110 0000
 					handle( -20 );	//can be tried from 15 to 24
-					motor( 270 ,390 );//380,260
+					motor( 189 ,266 );//390,270
 					break;
 
 				case 0x40: // 0100 0000
 					handle( -30 );
-					motor( 230 ,390 );//380,215
+					motor( 161 ,266 );//390,230
 					break;
 
-				case 0xc0: // 1100 0000
-					timer(5);
-					switch (sensor_inp(MASK4_4)){
-
-					/*It is right.*/
-					case 0x20: //0010 0000
-					case 0x40: //0100 0000
-					case 0x60: //0110 0000
-					case 0xe0: //1110 0000
-					case 0x70: //0111 0000
-						handle(44);
-						motor(240, 240);
-						motor(400, 140);
-						break;// 1100 0000
-						/*It must be left.*/
-					case 0x80: //1000 0000
-					case 0x81: //1000 0001
-					case 0x01: //0000 0001
-					case 0x03: //0000 0011
-					case 0x07: //0000 0111
-					case 0x06: //0000 0110
-					case 0x0e: //0000 1110
-					case 0x0c: //0000 1100
-						handle(-44);
-						motor(240, 240);
-						motor(140, 400);
-						break;// 0000 1100
-					}
+				case 0xc0: // 1100 0000	
+					handle(-44);
+					motor(140, 400);
 					break;
-
-					/*is it left or right?*/
-
-					case 0x83:	//1000 0011
-						timer(5);
-						switch (sensor_inp(MASK4_4)){
-
-						/*It is right.*/
-						case 0xc1:
-						case 0xc0:
-						case 0x60:
-						case 0xe0:
-						case 0x70:
-							handle(44);
-							motor( 370,120 );//130
-							break;// 0000 1100
-
-							/*It must be left.*/
-						case 0x03:
-						case 0x06:
-						case 0x07:
-						case 0x0e:
-							handle(-44);
-							motor( 120, 370 );//130
-							break;// 0000 1100
-						}
-						break;
-
-						case 0x07:	//0000 0111
-							timer(5);
-							switch (sensor_inp(MASK4_4)) {
-
-							/*It is right.*/
-							case 0x01:
-							case 0x03:
-							case 0x81:
-							case 0x80:
-								handle(44);
-								motor(370,120 );//130
-								break;// 0000 1100
-								/*it is left.*/
-							case 0x0e:
-							case 0x06:
-							case 0x0c:
-							case 0x08:
-								handle(-44);
-								motor( 120, 370 );//130
-								break;// 0000 1100
-							}
-							break;
-
-							case 0xe0: // 1110 0000
-								timer(5);
-								switch (sensor_inp(MASK4_4)) {
-
-								/*It is right.*/
-								case 0x60:
-								case 0x70:
-								case 0x30:
-								case 0x10:
-									handle(44);
-									motor( 370,120 );//130
-									break;// 0000 1100
-
-									/*it is left.*/
-								case 0xc0:
-								case 0xc1:
-								case 0x81:
-								case 0x01:
-								case 0x03:
-									handle(-44);
-									motor( 370,120);//130
-									break;// 0000 1100
-								}
-								break;
-
-								case 0xc1: // 1100 0001
-									timer(5);
-									switch (sensor_inp(MASK4_4)) {
-
-									/*It is right.*/
-									case 0x60:
-									case 0x70:
-									case 0x30:
-									case 0x10:
-										handle(44);
-										motor( 370,120 );//130
-										break;// 0000 1100
-
-										/*it is left.*/
-									case 0x81:
-									case 0x01:
-									case 0x03:
-									case 0x07:
-									case 0x06:
-										handle(-44);
-										motor( 120,370 );//130
-										break;// 0000 1100
-
-									}
-									break;
-
-									// Eklenebilecek durumlardan bir tanesi "case 0x80: // 1000 0000" ve "case 0x01: // 0000 00001"
-									//0x81
-
-									default:
-										break;
 			}
 			break;
 
@@ -463,7 +262,7 @@ void main(void)
 				/* Processing at 1st cross line */
 				led_out( 0x3 );
 				handle( 0 );
-				motor( 100 ,100 );
+				motor( 250 ,250 );
 				pattern = 22;
 				cnt1 = 0;
 				break;
@@ -500,13 +299,7 @@ void main(void)
 				case 0x00:
 					/* Center -> straight */
 					handle( 0 );
-					if(cnt1 < 100)
-						motor(310, 310);
-					else if(cnt1 >= 100 && cnt1 < 200)
-						motor(260,260);
-					else if(cnt1 >= 200 && cnt1 < 400)
-						motor(250,250);
-					else cnt1 = 0;
+					motor(250,250);
 					break;
 				case 0x04:
 				case 0x06:
@@ -514,13 +307,7 @@ void main(void)
 				case 0x03:
 					/* Left of center -> turn to right */
 					handle( 8 );
-					if(cnt1 < 100)
-						motor(310, 310);
-					else if(cnt1 >= 100 && cnt1 < 200)
-						motor(260,260);
-					else if(cnt1 >= 200 && cnt1 < 400)
-						motor(250,250);
-					else cnt1 = 0;
+					motor(250, 250);
 					break;
 				case 0x20:
 				case 0x60:
@@ -528,13 +315,7 @@ void main(void)
 				case 0xc0:
 					/* Right of center -> turn to left */
 					handle( -8 );
-					if(cnt1 < 100)
-						motor(310, 310);
-					else if(cnt1 >= 100 && cnt1 < 200)
-						motor(290,290);
-					else if(cnt1 >= 200 && cnt1 < 400)
-						motor(270,270);
-					else cnt1 = 0;
+					motor(250, 250);
 					break;
 				}
 				break;
@@ -569,7 +350,7 @@ void main(void)
 							/* Processing at 1st right half line detection */
 							led_out( 0x2 );
 							handle( 0 );
-							motor( 100 ,100 );
+							motor( 200 ,200 );
 							pattern = 52;
 							cnt1 = 0;
 							break;
@@ -584,7 +365,7 @@ void main(void)
 
 						case 53:
 							/* Trace, lane change after right half line detection */
-							/*if( sensor_inp(MASK4_4) == 0x00 ) {
+							if( sensor_inp(MASK4_4) == 0x00 ) {
 								handle( 35 ); //default :15
 								motor( 400 ,200 ); //default: 40,31
 								pattern = 54;
@@ -594,39 +375,21 @@ void main(void)
 							switch( sensor_inp(MASK3_3) ) {
 							case 0x00:
 								handle( 0 );
-								if(cnt1 < 100)
-									motor(320, 320);
-								else if(cnt1 >= 100 && cnt1 < 200)
-									motor(300,300);
-								else if(cnt1 >= 200 && cnt1 < 400)
-									motor(280,280);
-								else cnt1 = 0;
+								motor(320, 320);
 								break;
 							case 0x04:
 							case 0x06:
 							case 0x07:
 							case 0x03:
 								handle( 8 );
-								if(cnt1 < 100)
-									motor(320, 320);
-								else if(cnt1 >= 100 && cnt1 < 200)
-									motor(300,300);
-								else if(cnt1 >= 200 && cnt1 < 400)
-									motor(280,280);
-								else cnt1 = 0;
+								motor(320, 320);
 								break;
 							case 0x20:
 							case 0x60:
 							case 0xe0:
 							case 0xc0:
 								handle( -8 );
-								if(cnt1 < 100)
-									motor(320, 320);
-								else if(cnt1 >= 100 && cnt1 < 200)
-									motor(300,300);
-								else if(cnt1 >= 200 && cnt1 < 400)
-									motor(280,280);
-								else cnt1 = 0;
+								motor(320, 320);
 								break;
 							default:
 								break;
@@ -637,21 +400,18 @@ void main(void)
 								var_right = sensor_inp(MASK0_3 ); //0000 0111
 								if( var_right == 0x01 || var_right == 0x03  || var_right == 0x07 || var_right == 0x06 || var_right == 0x04 ||  var_right == 0x02  || var_right == 0x05 ) {
 									handle(-40);
-									motor(250, 380);
+									motor(175, 266);//250,380
 									led_out( 0x0 );
 									pattern = 11;
 									cnt1 = 0;
-								}*/
-							motor(50,50);
-							timer(100);
-							pattern = 11;
+								}
 							break;
 
 						case 61:
 
 							led_out( 0x1 );
 							handle( 0 );
-							motor( 350 ,350 );
+							motor( 300 ,300 );
 							pattern = 62;
 							cnt1 = 0;
 							break;
@@ -678,37 +438,19 @@ void main(void)
 							case 0x81:
 								//Center -> straight
 								handle( 0 );
-								if(cnt1 < 100)
-									motor(400, 400);
-								else if(cnt1 >= 100 && cnt1 < 200)
-									motor(350,350);
-								else if(cnt1 >= 200 && cnt1 < 400)
-									motor(310,310);
-								else cnt1 = 0;
+								motor(250, 250);
 								break;
 							case 0xc0:
 							case 0xc1:
 								//Left of center -> turn to right
 								handle( 8 );
-								if(cnt1 < 100)
-									motor(400, 400);
-								else if(cnt1 >= 100 && cnt1 < 200)
-									motor(350,350);
-								else if(cnt1 >= 200 && cnt1 < 400)
-									motor(310,310);
-								else cnt1 = 0;
+								motor(250, 250);
 								break;
 							case 0x01:
 							case 0x03:
 								//Right of center -> turn to left
 								handle( -8 );
-								if(cnt1 < 100)
-									motor(400, 400);
-								else if(cnt1 >= 100 && cnt1 < 200)
-									motor(350,350);
-								else if(cnt1 >= 200 && cnt1 < 400)
-									motor(310,310);
-								else cnt1 = 0;
+								motor(250, 250);
 								break;
 							default:
 								break;
@@ -723,7 +465,7 @@ void main(void)
 									cnt1 = 0;
 								}
 								handle(-15);
-								motor(400,400);
+								motor(300,300);
 								break;
 
 							default:
@@ -1037,8 +779,8 @@ void motor( int accele_l, int accele_r )
 	int    sw_data;
 
 	sw_data = dipsw_get() + 5;
-	accele_l = accele_l / -5.7;
-	accele_r = accele_r / 5.7;
+	accele_l = accele_l / -8;
+	accele_r = accele_r / 8;
 
 	/* Left Motor Control */
 	if( accele_l >= 0 ) {

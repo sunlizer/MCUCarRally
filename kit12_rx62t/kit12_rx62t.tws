@@ -8,19 +8,11 @@
 "BuildMultipleSettings" "sioservo1_62t|Debug|kit12_rx62t|Debug|sioservo2_62t|Debug|kit12test_rx62t|Debug||" 
 [BREAKPOINTS]
 [OPEN_WORKSPACE_FILES]
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\dbsct.c" 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\hwsetup.c" 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\intprg.c" 
 "C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\kit12_rx62t.c" 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\resetprg.c" 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\vecttbl.c" 
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\sioservo1_62t.c" 
 [WORKSPACE_FILE_STATES]
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\dbsct.c" 26 26 1133 319 0 1 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\hwsetup.c" 52 52 1133 319 0 2 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\intprg.c" 78 78 1133 319 0 3 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\kit12_rx62t.c" -8 -31 1279 488 1 0 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\resetprg.c" 104 104 1133 319 0 4 
-"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\vecttbl.c" 130 130 1133 319 0 5 
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\kit12_rx62t\kit12_rx62t.c" 0 0 1279 488 0 0 
+"C:\WorkSpace\MCUCarRally\kit12_rx62t\sioservo1_62t\sioservo1_62t.c" -8 -31 1279 488 1 1 
 [LOADED_PROJECTS]
 "kit12_rx62t" 
 [END]
