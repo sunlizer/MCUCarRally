@@ -75,6 +75,7 @@ unsigned char var_left = 0x00;
 unsigned char var_right = 0x00;
 unsigned char msb_check = 0x00;
 unsigned char lsb_check  = 0x00;
+int direction = 0;
 int cal_angle = 0;
 int motor_step=0;
 unsigned long   sensor4_4;
@@ -156,65 +157,114 @@ void main(void)
 
 		case 11:
 			/* Normal trace */
-			if( check_crossline() ) {   /* Cross line check            */
-				pattern = 21;
+			if(direction != 0 && sensor_inp(MASK4_4) == 0x00){
+				led_out( 0x1 );			
+				if(direction == 1){
+					handle(25);
+					motor( 400 ,200 ); //default: 40,31
+					timer(200);
+					pattern = 54;
+					direction = 0;
+					//sað þerit state i
+				}
+				else{	
+					handle(-25);
+					motor( 200 ,400 ); //default: 40,31
+					timer(200);
+					pattern = 64;
+					direction = 0;
+					//sol þerit state i
+				}
 				break;
 			}
-			if( check_rightline() ) {   /* Right half line detection check */
-				pattern = 51;
+			else if( check_rightline() || check_crossline() ) {   /* Right half line detection check */
+				
+				if(direction == 0){
+					led_out( 0x1 );	
+					handle(0);
+					direction = 1;
+					timer(200);
+					
+				}
+				else{
+					led_out( 0x2 );
+					direction = 0;
+					handle(42);
+					motor(100,100);
+					timer(100);
+					motor(266,175);
+					timer(300);
+					pattern = 65;
+					// saða donduðü state gelecek
+				}
 				break;
 			}
-			if( check_leftline() ) {    /* Left half line detection check */
-				pattern = 61;
+			else if( check_leftline() || check_crossline()) {    /* Left half line detection check */
+				if(direction == 0){
+					led_out( 0x1 );		
+					handle(0);	
+					direction = 2;
+					timer(200);
+				}
+				else{
+					direction = 0;
+					led_out( 0x2 );		
+					handle(-42);
+					motor(100,100);
+					timer(100);
+					motor(175,266);
+					timer(300);
+					pattern = 66;
+					//sola donme state i
+				}
 				break;
 			}
 			switch( sensor_inp(MASK4_4) ) {
+				case 0x18:	//0001 1000
+					/* Center -> straight */
+					handle( 0 );
+					motor(400, 400);
+					break;
 
-			case 0x18:	//0001 1000
-				/* Center -> straight */
-				handle( 0 );
-				motor(400, 400);
-				break;
+					/*  **********
+					 **********
+					 **
+					 **
+					 **
+					 ***/
+					/*Right S turn possibilities start here*/
+					/***********
+					 ************/
+				case 0x08:	//0000 1000
+					handle(2);
+					motor(390, 390);
+					break;
 
-				/*  **********
-				 **********
-				 **
-				 **
-				 **
-				 ***/
-				/*Right S turn possibilities start here*/
-				/***********
-				 ************/
-			case 0x08:	//0000 1000
-				handle(2);
-				motor(390, 390);
-				break;
+				case 0x0c: //0000 1100
+					handle(6);
+					motor(380, 380);
+					break;
 
-			case 0x0c: //0000 1100
-				handle(6);
-				motor(380, 380);
-				break;
+				case 0x04:	//0000 0100
+					handle(10);
+					motor(350, 350);
+					break;
 
-			case 0x04:	//0000 0100
-				handle(10);
-				motor(350, 350);
-				break;
+				case 0x0e: //0000 1110
+				case 0x06:	//0000 0110
+					handle( 20 );	//can be tried from 15 to 24
+					motor( 259 ,189 );//370,270
+					break;
 
-			case 0x0e: //0000 1110
-			case 0x06:	//0000 0110
-				handle( 20 );	//can be tried from 15 to 24
-				motor( 259 ,189 );//370,270
-				break;
+				case 0x02: //0000 0010
+					handle( 30 );
+					motor( 273 ,161 );//390,230
+					break;
 
-			case 0x02: //0000 0010
-				handle( 30 );
-				motor( 273 ,161 );//390,230
-				break;
-
-			case 0x03:	//0000 0011
-				handle(44);
-				motor(400, 140);
-				break;
+				case 0x03:	//0000 0011
+					handle(42);
+					motor(400, 140);
+					break;
 
 				/*   **********
 				 **********
@@ -252,226 +302,48 @@ void main(void)
 					break;
 
 				case 0xc0: // 1100 0000	
-					handle(-44);
+					handle(-42);
 					motor(140, 400);
 					break;
 			}
 			break;
 
-			case 21:
-				/* Processing at 1st cross line */
-				led_out( 0x3 );
-				handle( 0 );
-				motor( 250 ,250 );
-				pattern = 22;
+		case 54:
+			if(sensor_inp(MASK0_3) != 0x00 ) {
+				timer(100);
+				pattern = 11;
 				cnt1 = 0;
-				break;
+			}
+			break;
 
-			case 22:
-				/* Read but ignore 2nd line */
-				if( cnt1 > 150 ){
-					pattern = 23;
-					cnt1 = 0;
-				}
-				break;
+		case 64:
+			if(sensor_inp(MASK0_3) != 0x00 ) {
+				timer(100);
+				pattern = 11;
+				cnt1 = 0;
+			}
+			break;
 
-			case 23:
-				/* Trace, crank detection after cross line */
-				if( sensor_inp(MASK4_4)== 0xf8 || sensor_inp(MASK4_4)== 0xf0 || sensor_inp(MASK4_4)== 0xfc || sensor_inp(MASK4_4)== 0xfe  ) {
-					/* Left crank determined -> to left crank clearing processing */
-					led_out( 0x1 );
-					handle( -44 );
-					motor( -200 ,400 );
-					pattern = 31;
-					cnt1 = 0;
-					break;
-				}
-				if( sensor_inp(MASK4_4)== 0x1f || sensor_inp(MASK4_4)== 0x0f || sensor_inp(MASK4_4)== 0x3f || sensor_inp(MASK4_4)== 0x7f  ) {
-					/* Right crank determined -> to right crank clearing processing */
-					led_out( 0x2 );
-					handle( 44 );
-					motor( 400 ,-200 );
-					pattern = 41;
-					cnt1 = 0;
-					break;
-				}
-				switch( sensor_inp(MASK3_3) ) {
-				case 0x00:
-					/* Center -> straight */
-					handle( 0 );
-					motor(250,250);
-					break;
-				case 0x04:
-				case 0x06:
-				case 0x07:
-				case 0x03:
-					/* Left of center -> turn to right */
-					handle( 8 );
-					motor(250, 250);
-					break;
-				case 0x20:
-				case 0x60:
-				case 0xe0:
-				case 0xc0:
-					/* Right of center -> turn to left */
-					handle( -8 );
-					motor(250, 250);
-					break;
-				}
-				break;
+		case 65:
+			if(sensor_inp(MASK0_3) != 0x00){
+				led_out( 0x0 );
+				timer(200);
+				pattern = 11;
+			}
+			break;
 
-				case 31:
-					switch(sensor_inp(MASK4_4)){
-					case 0x81: // 1000 0001
-					case 0xc1: // 1100 0001
-					case 0x83: // 1000 0011
-						led_out( 0x0 );
-						timer(10);
-						pattern = 11;
-						cnt1 = 0;
-						break;
-					}
-					break;
+		case 66:
+			if(sensor_inp(MASK3_0) != 0x00){
+				led_out( 0x0 );
+				timer(200);
+				pattern = 11;
+			}
+			break;
 
-					case 41:
-						switch(sensor_inp(MASK4_4)){
-						case 0x81: // 1000 0001
-						case 0xa1: // 1000 0011
-						case 0x83: // 1100 0001
-							led_out( 0x0 );
-							timer(10);
-							pattern = 11;
-							cnt1 = 0;
-							break;
-						}
-						break;
-
-						case 51:
-							/* Processing at 1st right half line detection */
-							led_out( 0x2 );
-							handle( 0 );
-							motor( 200 ,200 );
-							pattern = 52;
-							cnt1 = 0;
-							break;
-
-						case 52:
-							/* Read but ignore 2nd time */
-							if( cnt1 > 150 ){
-								pattern = 53;
-								cnt1 = 0;
-							}
-							break;
-
-						case 53:
-							/* Trace, lane change after right half line detection */
-							if( sensor_inp(MASK4_4) == 0x00 ) {
-								handle( 35 ); //default :15
-								motor( 400 ,200 ); //default: 40,31
-								pattern = 54;
-								cnt1 = 0;
-								break;
-							}
-							switch( sensor_inp(MASK3_3) ) {
-							case 0x00:
-								handle( 0 );
-								motor(320, 320);
-								break;
-							case 0x04:
-							case 0x06:
-							case 0x07:
-							case 0x03:
-								handle( 8 );
-								motor(320, 320);
-								break;
-							case 0x20:
-							case 0x60:
-							case 0xe0:
-							case 0xc0:
-								handle( -8 );
-								motor(320, 320);
-								break;
-							default:
-								break;
-							}
-							break;
-
-							case 54:
-								var_right = sensor_inp(MASK0_3 ); //0000 0111
-								if( var_right == 0x01 || var_right == 0x03  || var_right == 0x07 || var_right == 0x06 || var_right == 0x04 ||  var_right == 0x02  || var_right == 0x05 ) {
-									handle(-40);
-									motor(175, 266);//250,380
-									led_out( 0x0 );
-									pattern = 11;
-									cnt1 = 0;
-								}
-							break;
-
-						case 61:
-
-							led_out( 0x1 );
-							handle( 0 );
-							motor( 300 ,300 );
-							pattern = 62;
-							cnt1 = 0;
-							break;
-
-						case 62:
-							if(sensor_inp(MASK4_4) == 0x81 || sensor_inp(MASK4_4) == 0x83 || sensor_inp(MASK4_4) == 0xc0  || sensor_inp(MASK4_4) == 0xc1)
-							{
-								pattern = 63;
-								cnt1 = 0;
-							}
-							handle(-10);
-							motor(350,350);
-							break;
-
-						case 63:
-							/* Trace, lane change after left half line detection */
-
-							if (sensor_inp(MASK4_4) == 0x01 || sensor_inp(MASK4_4) == 0x02 || sensor_inp(MASK4_4) == 0x00) {
-								pattern = 64;
-								cnt1 = 0;
-							}
-
-							switch( sensor_inp(MASK4_4) ) {
-							case 0x81:
-								//Center -> straight
-								handle( 0 );
-								motor(250, 250);
-								break;
-							case 0xc0:
-							case 0xc1:
-								//Left of center -> turn to right
-								handle( 8 );
-								motor(250, 250);
-								break;
-							case 0x01:
-							case 0x03:
-								//Right of center -> turn to left
-								handle( -8 );
-								motor(250, 250);
-								break;
-							default:
-								break;
-							}
-
-							break;
-
-							case 64:
-								if (sensor_inp(MASK4_4) == 0x80 || sensor_inp(MASK4_4) == 0xc0 || sensor_inp(MASK4_4) == 0xe0 )
-								{
-									pattern = 11;
-									cnt1 = 0;
-								}
-								handle(-15);
-								motor(300,300);
-								break;
-
-							default:
-								/* If neither, return to standby state */
-								pattern = 0;
-								break;
+		default:
+			/* If neither, return to standby state */
+			pattern = 0;
+			break;
 		}
 	}
 }
@@ -778,9 +650,13 @@ void motor( int accele_l, int accele_r )
 {
 	int    sw_data;
 
+	if (direction != 0){
+		accele_l = accele_l / 2;
+		accele_r = accele_r / 2;
+	}
 	sw_data = dipsw_get() + 5;
-	accele_l = accele_l / -8;
-	accele_r = accele_r / 8;
+	accele_l = accele_l / -6;
+	accele_r = accele_r / 6;
 
 	/* Left Motor Control */
 	if( accele_l >= 0 ) {
