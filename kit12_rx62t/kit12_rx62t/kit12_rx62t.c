@@ -79,7 +79,6 @@ int direction = 0;
 int cal_angle = 0;
 int motor_step=0;
 unsigned long   sensor4_4;
-unsigned long   sensor3_3;
 /***********************************************************************/
 /* Main program                                                        */
 /***********************************************************************/
@@ -93,8 +92,6 @@ void main(void)
 	motor( 0, 0 );
 
 	while( 1 ) {
-		sensor4_4 = sensor_inp(MASK4_4);
-		sensor3_3 = sensor_inp(MASK3_3);
 		switch( pattern ) {
 
 		/****************************************************************
@@ -183,18 +180,25 @@ void main(void)
 					led_out( 0x1 );	
 					handle(0);
 					direction = 1;
-					timer(125);
+					motor(0,0);
+					timer(300);
 					
 				}
 				else{
 					led_out( 0x2 );
 					direction = 0;
 					handle(42);
-					motor(0,0);
 					timer(100);
-					motor(325,125);
-					timer(300);
-					pattern = 65;
+					motor(400,-200);
+					//timer(300);
+					while(1){
+						sensor4_4 = sensor_inp(MASK4_4);
+						if(sensor4_4 ==  0x81)break;
+						else if(sensor4_4 ==  0x81)break;
+						else if(sensor4_4 ==  0x81)break;
+					}
+					led_out(0x0);
+					//pattern = 65;
 					// saða donduðü state gelecek
 				}
 				break;
@@ -204,6 +208,7 @@ void main(void)
 					led_out( 0x1 );		
 					handle(0);	
 					direction = 2;
+					motor(0,0);
 					timer(125);
 				}
 				else{
@@ -262,8 +267,38 @@ void main(void)
 					break;
 
 				case 0x03:	//0000 0011
-					handle(42);
-					motor(400, 140);
+					//handle(42);
+					//motor(400, 140);
+					timer(5);
+					switch (sensor_inp(MASK4_4)){
+					/*It is right.*/
+					case 0x83://1000 0011
+					case 0x81://1000 0001
+					case 0x01://0000 0001
+					case 0x80://1000 0000
+					case 0xc0://1100 0000
+					case 0x40://0100 0000
+					case 0x60://0110 0000
+					case 0xe0://1110 0000
+						handle(42);
+						motor(0, 0);//motor(240,240);
+						timer(25);
+						motor(400, 140);
+						break;
+
+						/*It must be left.*/
+					case 0x06://0000 0110
+					case 0x02://0000 0010
+					case 0x04://0000 0100
+					case 0x07://0000 0111
+					case 0x0e://0000 1110
+					case 0x0c://0000 1100
+						handle(-42);
+						motor(0, 0);//motor(240, 240);
+						timer(25);
+						motor(140, 400);
+						break;
+					}
 					break;
 
 				/*   **********
@@ -302,8 +337,37 @@ void main(void)
 					break;
 
 				case 0xc0: // 1100 0000	
-					handle(-42);
-					motor(140, 400);
+					//handle(-42);
+					//motor(140, 400);
+					timer(5);
+					switch (sensor_inp(MASK4_4)){
+
+					/*It is right.*/
+					case 0x20: //0010 0000
+					case 0x40: //0100 0000
+					case 0x60: //0110 0000
+					case 0xe0: //1110 0000
+					case 0x70: //0111 0000
+						handle(42);
+						motor(0,0);//motor(240, 240);
+						timer(25);
+						motor(400, 140);
+						break;// 1100 0000
+						/*It must be left.*/
+					case 0x80: //1000 0000
+					case 0x81: //1000 0001
+					case 0x01: //0000 0001
+					case 0x03: //0000 0011
+					case 0x07: //0000 0111
+					case 0x06: //0000 0110
+					case 0x0e: //0000 1110
+					case 0x0c: //0000 1100
+						handle(-42);
+						motor(0,0);//motor(240, 240);
+						timer(25);
+						motor(140, 400);
+						break;// 0000 1100
+					}
 					break;
 			}
 			break;
