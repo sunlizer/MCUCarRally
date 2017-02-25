@@ -161,16 +161,16 @@ void main(void)
 				led_out( 0x1 );			
 				if(direction == 1){
 					handle(25);
-					motor( 400 ,200 ); //default: 40,31
-					timer(200);
+					motor( 400 ,250); //default: 40,31
+					timer(150);
 					pattern = 54;
 					direction = 0;
 					//sað þerit state i
 				}
 				else{	
 					handle(-25);
-					motor( 200 ,400 ); //default: 40,31
-					timer(200);
+					motor( 250 ,400 ); //default: 40,31
+					timer(150);
 					pattern = 64;
 					direction = 0;
 					//sol þerit state i
@@ -183,16 +183,16 @@ void main(void)
 					led_out( 0x1 );	
 					handle(0);
 					direction = 1;
-					timer(200);
+					timer(125);
 					
 				}
 				else{
 					led_out( 0x2 );
 					direction = 0;
 					handle(42);
-					motor(100,100);
+					motor(0,0);
 					timer(100);
-					motor(266,175);
+					motor(325,125);
 					timer(300);
 					pattern = 65;
 					// saða donduðü state gelecek
@@ -204,15 +204,15 @@ void main(void)
 					led_out( 0x1 );		
 					handle(0);	
 					direction = 2;
-					timer(200);
+					timer(125);
 				}
 				else{
 					direction = 0;
 					led_out( 0x2 );		
 					handle(-42);
-					motor(100,100);
+					motor(0,0);
 					timer(100);
-					motor(175,266);
+					motor(125,325);
 					timer(300);
 					pattern = 66;
 					//sola donme state i
@@ -309,8 +309,10 @@ void main(void)
 			break;
 
 		case 54:
-			if(sensor_inp(MASK0_3) != 0x00 ) {
-				timer(100);
+			if(sensor_inp(MASK3_0) != 0x00 ) {
+				handle(-25);
+				motor(175,300);
+				timer(200);
 				pattern = 11;
 				cnt1 = 0;
 			}
@@ -318,7 +320,9 @@ void main(void)
 
 		case 64:
 			if(sensor_inp(MASK0_3) != 0x00 ) {
-				timer(100);
+				handle(25);
+				motor(300,175);
+				timer(200);
 				pattern = 11;
 				cnt1 = 0;
 			}
@@ -327,7 +331,7 @@ void main(void)
 		case 65:
 			if(sensor_inp(MASK0_3) != 0x00){
 				led_out( 0x0 );
-				timer(200);
+				timer(300);
 				pattern = 11;
 			}
 			break;
@@ -484,48 +488,12 @@ unsigned char startbar_get( void )
 /***********************************************************************/
 int check_crossline( void )
 {
-	//unsigned char b;
-	int ret;
-
-	ret = 0;
-	switch(sensor_inp(MASK4_4)){
-	//case 0x1e: ret = 1; break;// 0001 1110
-	//case 0x78: ret = 1; break;// 0111 1000
-	//case 0x3f: ret = 1; break;// 0011 1111
-	//case 0xfc: ret = 1; break;// 1111 1100
-	case 0x3e: ret = 1; break;// 0011 1110
-	case 0x7c: ret = 1; break;// 0111 1100
-	case 0x7e: ret = 1; break;// 0111 1110
-	case 0xfe: ret = 1; break;// 1111 1110
-	case 0x7f: ret = 1; break;// 0111 1111
-	case 0xff: ret = 1; break;// 1111 1111
-
-	case 0xf8: // 1111 1000
-		timer(10);
-		switch(sensor_inp(MASK4_4)){
-		case 0x7f: ret = 1; break;// 0111 1111
-		case 0x7e: ret = 1; break;// 0111 1110
-		case 0x7c: ret = 1; break;// 0111 1100
-		case 0xfe: ret = 1; break;// 1111 1110
-		case 0xfc: ret = 1; break;// 1111 1100
-		case 0xff: ret = 1; break;// 1111 1111 Eklenecebilecek bir diger durum 0111 1101 veya 0111 1001
-		}
-		break;
-
-		case 0x1f: // 0001 1111
-			timer(10);
-			switch(sensor_inp(MASK4_4)){
-			case 0x7f: ret = 1; break;// 0111 1111
-			case 0x7e: ret = 1; break;// 0111 1110
-			case 0x7c: ret = 1; break;// 0111 1100
-			case 0xfe: ret = 1; break;// 1111 1110
-			case 0xfc: ret = 1; break;// 1111 1100
-			case 0xff: ret = 1; break;// 1111 1111 Eklenecebilecek bir diger durum 0111 1101 veya 0111 1001
-			}
-			break;
-
-	}
-	return ret;
+    unsigned char b;
+    b = sensor_inp(MASK3_3);
+    if( b==0xe7 ) {
+        return 1;
+    }
+    else return 0;
 }
 
 /***********************************************************************/
@@ -534,22 +502,12 @@ int check_crossline( void )
 /***********************************************************************/
 int check_rightline( void )
 {
-	unsigned char b;
-	//unsigned char c;
-	int ret;
-
-	ret = 0;
-	b = sensor_inp(MASK4_4);
-	//c = sensor_inp(0x03); //0000 0011 bu durumla ilgili state ekle
-
-	if( b==0x1f || b==0x0f || b==0x3f ) {
-		timer(5);
-		if(!(check_crossline())){
-			if(sensor_inp(0x40) == 0x00) // 0100 0000
-				ret = 1;
-		}
-	}
-	return ret;
+    unsigned char b;
+    b = sensor_inp(MASK4_4);
+    if( b==0x1f || b==0x0f) {
+		return 1;
+    }
+	return 0;
 }
 
 /***********************************************************************/
@@ -558,20 +516,12 @@ int check_rightline( void )
 /***********************************************************************/
 int check_leftline( void )
 {
-	unsigned char b;
-	int ret;
-
-	ret = 0;
-	b = sensor_inp(MASK4_4);
-
-	if( b==0xf8 || b==0xf0 || b==0xfc ) {
-		timer(10);
-		if(!(check_crossline())){
-			if(sensor_inp(0x02) == 0x00)//0000 0010
-				ret = 1;
-		}
-	}
-	return ret;
+    unsigned char b;
+    b = sensor_inp(MASK4_4);
+	if( b==0xf8 || b==0xf0) {
+		return 1;
+    }
+ 	return 0;
 }
 
 /***********************************************************************/
@@ -648,15 +598,15 @@ void led_out( unsigned char led )
 /***********************************************************************/
 void motor( int accele_l, int accele_r )
 {
-	int    sw_data;
+	//int    sw_data;
 
 	if (direction != 0){
 		accele_l = accele_l / 2;
 		accele_r = accele_r / 2;
 	}
-	sw_data = dipsw_get() + 5;
-	accele_l = accele_l / -6;
-	accele_r = accele_r / 6;
+	//sw_data = dipsw_get() + 5;
+	accele_l = accele_l / -5;
+	accele_r = accele_r / -5;
 
 	/* Left Motor Control */
 	if( accele_l >= 0 ) {
