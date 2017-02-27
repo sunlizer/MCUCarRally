@@ -26,7 +26,7 @@ This program supports the following boards:
 
 /* Constant settings */
 #define PWM_CYCLE       24575           /* Motor PWM period (16ms)     */
-#define SERVO_CENTER    1524            /* Servo center value          */
+#define SERVO_CENTER    1532            /* Servo center value         1524 */
 #define HANDLE_STEP     13              /* 1 degree value              */
 
 /* Masked value settings X:masked (disabled) O:not masked (enabled) */
@@ -181,7 +181,7 @@ void main(void)
 					handle(0);
 					direction = 1;
 					motor(0,0);
-					timer(300);
+					timer(125);
 					
 				}
 				else{
@@ -231,15 +231,7 @@ void main(void)
 					motor(400, 400);
 					break;
 
-					/*  **********
-					 **********
-					 **
-					 **
-					 **
-					 ***/
-					/*Right S turn possibilities start here*/
-					/***********
-					 ************/
+				/*Right S turn possibilities start here*/
 				case 0x08:	//0000 1000
 					handle(2);
 					motor(390, 390);
@@ -301,15 +293,7 @@ void main(void)
 					}
 					break;
 
-				/*   **********
-				 **********
-				 **
-				 **
-				 **
-				 ***/
 				/*Left S turn possibilities start here*/
-				/***********
-				 ************/
 				case 0x10: // 0001 0000
 					handle(-2);
 					motor(390, 390);
@@ -349,7 +333,7 @@ void main(void)
 					case 0xe0: //1110 0000
 					case 0x70: //0111 0000
 						handle(42);
-						motor(0,0);//motor(240, 240);
+						motor(240,240);//motor(240, 240);
 						timer(25);
 						motor(400, 140);
 						break;// 1100 0000
@@ -363,7 +347,7 @@ void main(void)
 					case 0x0e: //0000 1110
 					case 0x0c: //0000 1100
 						handle(-42);
-						motor(0,0);//motor(240, 240);
+						motor(240,240);//motor(240, 240);
 						timer(25);
 						motor(140, 400);
 						break;// 0000 1100
@@ -669,8 +653,8 @@ void motor( int accele_l, int accele_r )
 		accele_r = accele_r / 2;
 	}
 	//sw_data = dipsw_get() + 5;
-	accele_l = accele_l / -5;
-	accele_r = accele_r / -5;
+	accele_l = accele_l / -4;
+	accele_r = accele_r / 4;
 
 	/* Left Motor Control */
 	if( accele_l >= 0 ) {
