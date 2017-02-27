@@ -157,17 +157,17 @@ void main(void)
 			if(direction != 0 && sensor_inp(MASK4_4) == 0x00){
 				led_out( 0x1 );			
 				if(direction == 1){
-					handle(25);
-					motor( 400 ,250); //default: 40,31
-					timer(150);
+					handle(20);
+					motor( 400 ,300); //default: 40,31
+					timer(50);
 					pattern = 54;
 					direction = 0;
 					//sað þerit state i
 				}
 				else{	
-					handle(-25);
-					motor( 250 ,400 ); //default: 40,31
-					timer(150);
+					handle(-24);
+					motor( 200 ,400 ); //default: 40,31
+					timer(50);
 					pattern = 64;
 					direction = 0;
 					//sol þerit state i
@@ -180,12 +180,12 @@ void main(void)
 					led_out( 0x1 );	
 					handle(0);
 					direction = 1;
-					motor(0,0);
-					timer(125);
+					motor(200,200);
+					timer(75);
 					
 				}
 				else{
-					led_out( 0x2 );
+					led_out( 0x1 );
 					direction = 0;
 					handle(42);
 					timer(100);
@@ -194,8 +194,8 @@ void main(void)
 					while(1){
 						sensor4_4 = sensor_inp(MASK4_4);
 						if(sensor4_4 ==  0x81)break;
-						else if(sensor4_4 ==  0x81)break;
-						else if(sensor4_4 ==  0x81)break;
+						else if(sensor4_4 ==  0x83)break;
+						else if(sensor4_4 ==  0xc1)break;
 					}
 					led_out(0x0);
 					//pattern = 65;
@@ -208,18 +208,31 @@ void main(void)
 					led_out( 0x1 );		
 					handle(0);	
 					direction = 2;
-					motor(0,0);
-					timer(125);
+					motor(200,200);
+					timer(75);
 				}
 				else{
+					led_out( 0x2 );
+					direction = 0;
+					handle(-42);
+					timer(100);
+					motor(-200, 400);
+					//timer(300);
+					while(1){
+						sensor4_4 = sensor_inp(MASK4_4);
+						if(sensor4_4 ==  0x81)break;
+						else if(sensor4_4 ==  0x83)break;
+						else if(sensor4_4 ==  0xc1)break;
+					}/*
+					led_out(0x0);
 					direction = 0;
 					led_out( 0x2 );		
 					handle(-42);
-					motor(0,0);
+					motor(200,200);
 					timer(100);
 					motor(125,325);
 					timer(300);
-					pattern = 66;
+					pattern = 66;*/
 					//sola donme state i
 				}
 				break;
@@ -357,10 +370,10 @@ void main(void)
 			break;
 
 		case 54:
-			if(sensor_inp(MASK3_0) != 0x00 ) {
-				handle(-25);
-				motor(175,300);
-				timer(200);
+			if(sensor_inp(MASK4_0) != 0x00 ) {
+				handle(-30);
+				motor(200,400);
+				timer(350);
 				pattern = 11;
 				cnt1 = 0;
 			}
@@ -368,27 +381,11 @@ void main(void)
 
 		case 64:
 			if(sensor_inp(MASK0_3) != 0x00 ) {
-				handle(25);
-				motor(300,175);
+				handle(26);
+				motor(400,200);
 				timer(200);
 				pattern = 11;
 				cnt1 = 0;
-			}
-			break;
-
-		case 65:
-			if(sensor_inp(MASK0_3) != 0x00){
-				led_out( 0x0 );
-				timer(300);
-				pattern = 11;
-			}
-			break;
-
-		case 66:
-			if(sensor_inp(MASK3_0) != 0x00){
-				led_out( 0x0 );
-				timer(200);
-				pattern = 11;
 			}
 			break;
 
@@ -649,8 +646,8 @@ void motor( int accele_l, int accele_r )
 	//int    sw_data;
 
 	if (direction != 0){
-		accele_l = accele_l / 2;
-		accele_r = accele_r / 2;
+		accele_l = accele_l * 3 / 5;
+		accele_r = accele_r * 3 / 5;
 	}
 	//sw_data = dipsw_get() + 5;
 	accele_l = accele_l / -4;
