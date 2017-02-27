@@ -249,13 +249,13 @@ void main(void)
 
 				case 0x0e: //0000 1110
 				case 0x06:	//0000 0110
-					handle( 20 );	//can be tried from 15 to 24
-					motor( 259 ,189 );//370,270
+					handle( 22 );	//can be tried from 15 to 24
+					motor( 319 ,227 );//370,270
 					break;
 
 				case 0x02: //0000 0010
-					handle( 30 );
-					motor( 273 ,161 );//390,230
+					handle( 34 );
+					motor( 319 ,193 );//390,230
 					break;
 
 				case 0x03:	//0000 0011
@@ -311,13 +311,13 @@ void main(void)
 
 				case 0x70: // 0111 0000
 				case 0x60: // 0110 0000
-					handle( -20 );	//can be tried from 15 to 24
-					motor( 189 ,266 );//390,270
+					handle( -24 );	//can be tried from 15 to 24
+					motor( 227 ,319 );//390,270
 					break;
 
 				case 0x40: // 0100 0000
-					handle( -30 );
-					motor( 161 ,266 );//390,230
+					handle( -36 );
+					motor( 193 ,319 );//390,230
 					break;
 
 				case 0xc0: // 1100 0000	
