@@ -61,9 +61,7 @@ void led_out_m( unsigned char led );
 void led_out( unsigned char led );
 void motor( int accele_l, int accele_r );
 void handle( int angle );
-int motor_speed_control(int calculated_angle, int rpm_calculated);
-// rpm_olcer fonksiyonu motor_speed_control fonksiyonu icine de yazilabilir. Veya
-// ayrýca bir fonksiyon yazýlabilir
+void hearthBreaker( int time );
 
 /*======================================*/
 /* Global variable declarations         */
@@ -79,6 +77,7 @@ int direction = 0;
 int cal_angle = 0;
 int motor_step=0;
 unsigned long   sensor4_4;
+int state = 0;
 /***********************************************************************/
 /* Main program                                                        */
 /***********************************************************************/
@@ -165,8 +164,8 @@ void main(void)
 					//sað þerit state i
 				}
 				else{	
-					handle(-24);
-					motor( 200 ,400 ); //default: 40,31
+					handle(-20);
+					motor( 300 ,400 ); //default: 40,31
 					timer(50);
 					pattern = 64;
 					direction = 0;
@@ -177,6 +176,11 @@ void main(void)
 			else if( check_rightline() || check_crossline() ) {   /* Right half line detection check */
 				
 				if(direction == 0){
+					state++;
+					if(state == 4){
+						state = 0;
+						hearthBreaker(500);
+					}
 					led_out( 0x1 );	
 					handle(0);
 					direction = 1;
@@ -205,6 +209,11 @@ void main(void)
 			}
 			else if( check_leftline() || check_crossline()) {    /* Left half line detection check */
 				if(direction == 0){
+					state++;
+					if(state == 4){
+						state = 0;
+						hearthBreaker(500);
+					}
 					led_out( 0x1 );		
 					handle(0);	
 					direction = 2;
@@ -381,9 +390,9 @@ void main(void)
 
 		case 64:
 			if(sensor_inp(MASK0_3) != 0x00 ) {
-				handle(26);
+				handle(30);
 				motor(400,200);
-				timer(200);
+				timer(350);
 				pattern = 11;
 				cnt1 = 0;
 			}
@@ -685,18 +694,141 @@ void handle( int angle )
 	MTU3.TGRD = SERVO_CENTER - angle * HANDLE_STEP;
 }
 
-int motor_speed_control(int calculated_angle, int rpm_calculated)
+
+void hearthBreaker( int time )
 {
-	double r1, r2, r3;
-	int motor_speed;
+	cnt1 = 0;
+	while(cnt1 < time){
+		switch( sensor_inp(MASK4_4) ) {
+				case 0x18:	//0001 1000
+					/* Center -> straight */
+					handle( 0 );
+					motor(100, 100);
+					break;
 
-	r2 = WCAR / tan(calculated_angle* DEG_TO_RAD);
-	r1 = r2 - (TCAR / 2);
-	r3 = r2 + (TCAR / 2);
+				/*Right S turn possibilities start here*/
+				case 0x08:	//0000 1000
+					handle(2);
+					motor(100, 100);
+					break;
 
-	motor_speed = (int)(r1/ r3) * (rpm_calculated +20 );// RPM hesabý eklenmeli
+				case 0x0c: //0000 1100
+					handle(6);
+					motor(100, 100);
+					break;
 
-	return motor_speed;
+				case 0x04:	//0000 0100
+					handle(10);
+					motor(90, 90);
+					break;
+
+				case 0x0e: //0000 1110
+				case 0x06:	//0000 0110
+					handle( 22 );	//can be tried from 15 to 24
+					motor( 80 ,0 );//370,270
+					break;
+
+				case 0x02: //0000 0010
+					handle( 34 );
+					motor( 80 ,0 );//390,230
+					break;
+
+				case 0x03:	//0000 0011
+					//handle(42);
+					//motor(400, 140);
+					timer(5);
+					switch (sensor_inp(MASK4_4)){
+					/*It is right.*/
+					case 0x83://1000 0011
+					case 0x81://1000 0001
+					case 0x01://0000 0001
+					case 0x80://1000 0000
+					case 0xc0://1100 0000
+					case 0x40://0100 0000
+					case 0x60://0110 0000
+					case 0xe0://1110 0000
+						handle(42);
+						motor(0, 0);//motor(240,240);
+						timer(25);
+						motor(100, 0);
+						break;
+
+						/*It must be left.*/
+					case 0x06://0000 0110
+					case 0x02://0000 0010
+					case 0x04://0000 0100
+					case 0x07://0000 0111
+					case 0x0e://0000 1110
+					case 0x0c://0000 1100
+						handle(-42);
+						motor(0, 0);//motor(240, 240);
+						timer(25);
+						motor(0, 100);
+						break;
+					}
+					break;
+
+				/*Left S turn possibilities start here*/
+				case 0x10: // 0001 0000
+					handle(-2);
+					motor(100, 100);
+					break;
+
+				case 0x30:
+					handle(-6);
+					motor(100, 100);
+					break;
+
+				case 0x20: // 0010 0000
+					handle( -10 );
+					motor(90, 90);
+					break;
+
+				case 0x70: // 0111 0000
+				case 0x60: // 0110 0000
+					handle( -24 );	//can be tried from 15 to 24
+					motor( 0 ,80 );//390,270
+					break;
+
+				case 0x40: // 0100 0000
+					handle( -36 );
+					motor( 0 ,80 );//390,230
+					break;
+
+				case 0xc0: // 1100 0000	
+					//handle(-42);
+					//motor(140, 400);
+					timer(5);
+					switch (sensor_inp(MASK4_4)){
+
+					/*It is right.*/
+					case 0x20: //0010 0000
+					case 0x40: //0100 0000
+					case 0x60: //0110 0000
+					case 0xe0: //1110 0000
+					case 0x70: //0111 0000
+						handle(42);
+						motor(0,0);//motor(240, 240);
+						timer(25);
+						motor(100, 0);
+						break;// 1100 0000
+						/*It must be left.*/
+					case 0x80: //1000 0000
+					case 0x81: //1000 0001
+					case 0x01: //0000 0001
+					case 0x03: //0000 0011
+					case 0x07: //0000 0111
+					case 0x06: //0000 0110
+					case 0x0e: //0000 1110
+					case 0x0c: //0000 1100
+						handle(-42);
+						motor(0,0);//motor(240, 240);
+						timer(25);
+						motor(0, 100);
+						break;// 0000 1100
+					}
+				}
+	}
 }
 
 /***********************************************************************/

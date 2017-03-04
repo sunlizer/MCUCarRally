@@ -1,4 +1,4 @@
-Optimizing Linkage Editor (V.10.02.00.000)        27-Feb-2017 23:05:56
+Optimizing Linkage Editor (V.10.02.00.000)        04-Mar-2017 14:17:28
 
 *** Options ***
 
@@ -36,9 +36,9 @@ B_2
 R_2
                                   00001004  00001004         0   2
 B
-                                  00001004  00001417       414   4
+                                  00001004  00001413       410   4
 R
-                                  00001418  00001427        10   4
+                                  00001414  00001427        14   4
 SU
                                   00001428  00001727       300   4
 SI
@@ -50,28 +50,28 @@ C_1
 C_2
                                   ffff8100  ffff8100         0   2
 C
-                                  ffff8100  ffff814b        4c   4
+                                  ffff8100  ffff8117        18   4
 C$DSEC
-                                  ffff814c  ffff816f        24   4
+                                  ffff8118  ffff813b        24   4
 C$BSEC
-                                  ffff8170  ffff8187        18   4
+                                  ffff813c  ffff8153        18   4
 C$VECT
-                                  ffff8188  ffff8587       400   4
+                                  ffff8154  ffff8553       400   4
 D
-                                  ffff8588  ffff8597        10   4
+                                  ffff8554  ffff8567        14   4
 D_2
-                                  ffff8598  ffff8598         0   2
+                                  ffff8568  ffff8568         0   2
 D_1
-                                  ffff8598  ffff859b         4   1
+                                  ffff8568  ffff856b         4   1
 P
-                                  ffff859c  ffff8e1a       87f   4
+                                  ffff856c  ffff8d74       809   4
 PIntPRG
-                                  ffff8e1b  ffff8e2b        11   1
+                                  ffff8d75  ffff8d83         f   1
 W_1
-                                  ffff8e2c  ffff8e2c         0   4
+                                  ffff8d84  ffff8d84         0   4
 W_2
-                                  ffff8e2c  ffff8e2c         0   2
+                                  ffff8d84  ffff8d84         0   2
 W
-                                  ffff8e2c  ffff8e2c         0   4
+                                  ffff8d84  ffff8d84         0   4
 FIXEDVECT
                                   ffffffd0  ffffffff        30   4
