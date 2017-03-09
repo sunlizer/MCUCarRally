@@ -26,8 +26,8 @@ This program supports the following boards:
 
 /* Constant settings */
 #define PWM_CYCLE       24575           /* Motor PWM period (16ms)     */
-#define SERVO_CENTER    1532            /* Servo center value         1524 */
-#define HANDLE_STEP     13              /* 1 degree value              */
+#define SERVO_CENTER    1562            /* Servo center value         1524 */
+#define HANDLE_STEP     -17.5              /* 1 degree value              */
 
 /* Masked value settings X:masked (disabled) O:not masked (enabled) */
 #define MASK2_2         0x66            /* X O O X  X O O X            */
@@ -39,11 +39,6 @@ This program supports the following boards:
 #define MASK4_0         0xf0            /* O O O O  X X X X            */
 #define MASK0_4         0x0f            /* X X X X  O O O O            */
 #define MASK4_4         0xff            /* O O O O  O O O O            */
-#define CHECK_TIME 11
-#define WCAR 0.17
-#define TCAR 0.17
-#define DEG_TO_RAD 0.01745329252 // 1 deg to rad
-
 /*======================================*/
 /* Prototype declarations               */
 /*======================================*/
@@ -232,17 +227,7 @@ void main(void)
 						if(sensor4_4 ==  0x81)break;
 						else if(sensor4_4 ==  0x83)break;
 						else if(sensor4_4 ==  0xc1)break;
-					}/*
-					led_out(0x0);
-					direction = 0;
-					led_out( 0x2 );		
-					handle(-42);
-					motor(200,200);
-					timer(100);
-					motor(125,325);
-					timer(300);
-					pattern = 66;*/
-					//sola donme state i
+					}
 				}
 				break;
 			}
@@ -343,8 +328,6 @@ void main(void)
 					break;
 
 				case 0xc0: // 1100 0000	
-					//handle(-42);
-					//motor(140, 400);
 					timer(5);
 					switch (sensor_inp(MASK4_4)){
 
